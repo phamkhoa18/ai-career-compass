@@ -1,26 +1,377 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: 'Quicksand', var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono);
+
+  /* Refined pastel palette - higher contrast */
+  --color-primary: #E8899D;
+  --color-primary-light: #FDE8EE;
+  --color-primary-dark: #C96B80;
+  --color-secondary: #7CB8CC;
+  --color-secondary-light: #D4EEFF;
+  --color-secondary-dark: #5A9AB5;
+  --color-accent: #7CC9A8;
+  --color-accent-light: #D8F5EA;
+  --color-accent-dark: #56A985;
+  --color-warm: #E8B88A;
+  --color-warm-light: #FFEDE0;
+  --color-warm-dark: #CC9A6A;
+  --color-lavender: #B896D6;
+  --color-lavender-light: #EEDDF7;
+  --color-lavender-dark: #9B73C0;
+  --color-cream: #FEFAF6;
+  --color-cream-dark: #F8F0E5;
+  --color-yellow-pastel: #E8C94A;
+  --color-card: #FFFFFF;
+  --color-card-hover: #FFFAF5;
+  --color-border-soft: #E8E0E2;
+  --color-text-main: #1A1A2E;
+  --color-text-secondary: #4A4A5A;
+  --color-text-light: #8A8A9A;
+  --color-success: #2EAF7D;
+  --color-warning: #E8A838;
+  --color-danger: #D85545;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #FEFAF6;
+  --foreground: #1A1A2E;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Quicksand', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========== Ant Design Overrides ========== */
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #E8899D, #C96B80) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-family: 'Quicksand', sans-serif !important;
+  box-shadow: 0 4px 15px rgba(201, 107, 128, 0.3) !important;
+  transition: all 0.3s ease !important;
+  color: #fff !important;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #C96B80, #B55A6F) !important;
+  box-shadow: 0 6px 20px rgba(201, 107, 128, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+.ant-btn-default {
+  border-radius: 12px !important;
+  border-color: #E8E0E2 !important;
+  font-weight: 600 !important;
+  font-family: 'Quicksand', sans-serif !important;
+  color: #4A4A5A !important;
+}
+
+.ant-input,
+.ant-input-number,
+.ant-select-selector,
+.ant-picker,
+.ant-input-affix-wrapper {
+  border-radius: 12px !important;
+  border: 1px solid #E8E0E2 !important;
+  font-family: 'Quicksand', sans-serif !important;
+  background-color: #ffffff !important;
+  color: #1A1A2E !important;
+}
+
+/* Fix iOS Safari native input styles without causing double borders */
+input.ant-input,
+input.ant-input-number-input {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  opacity: 1 !important;
+}
+
+/* Remove inner border when input is inside an affix wrapper (like with icons) */
+.ant-input-affix-wrapper > input.ant-input {
+  border: none !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-number:focus,
+.ant-input-number-focused,
+.ant-select-focused .ant-select-selector {
+  border-color: #E8899D !important;
+  box-shadow: 0 0 0 3px rgba(232, 137, 157, 0.15) !important;
+}
+
+.ant-steps .ant-steps-item-finish .ant-steps-item-icon {
+  background: #7CC9A8 !important;
+  border-color: #7CC9A8 !important;
+}
+
+.ant-steps .ant-steps-item-process .ant-steps-item-icon {
+  background: linear-gradient(135deg, #E8899D, #C96B80) !important;
+  border-color: #E8899D !important;
+}
+
+.ant-steps .ant-steps-item-title {
+  font-family: 'Quicksand', sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* Mobile steps - hide title text */
+@media (max-width: 640px) {
+  .ant-steps .ant-steps-item-title {
+    display: none !important;
+  }
+  .ant-steps .ant-steps-item-tail {
+    margin-inline-start: 20px !important;
+  }
+}
+
+.ant-slider-track {
+  background: linear-gradient(90deg, #38bdf8, #818cf8) !important; /* Bright cyan to indigo */
+}
+
+.ant-slider-handle::after {
+  box-shadow: 0 0 0 2px #818cf8 !important;
+}
+
+.ant-card {
+  border-radius: 16px !important;
+  border: 1px solid #E8E0E2 !important;
+  font-family: 'Quicksand', sans-serif !important;
+}
+
+.ant-message-notice-content {
+  border-radius: 12px !important;
+  font-family: 'Quicksand', sans-serif !important;
+  display: inline-block !important;
+}
+
+.ant-table {
+  font-family: 'Quicksand', sans-serif !important;
+}
+
+.ant-table-thead > tr > th {
+  background: linear-gradient(135deg, #FDE8EE, #FEFAF6) !important;
+  font-weight: 700 !important;
+  color: #1A1A2E !important;
+}
+
+/* Mobile table */
+@media (max-width: 640px) {
+  .ant-table {
+    font-size: 12px !important;
+  }
+}
+
+/* ========== Custom Scrollbar ========== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FEFAF6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E8899D;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C96B80;
+}
+
+/* ========== Animations ========== */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.animate-pulse-soft {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Stagger children */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* ========== Glass Card ========== */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* ========== Text Utilities ========== */
+
+.gradient-text {
+  background: linear-gradient(135deg, #C96B80, #5A9AB5, #56A985);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== Hover & Interactive ========== */
+
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ========== Gradient Backgrounds ========== */
+
+.bg-gradient-pastel {
+  background: linear-gradient(135deg, #FEFAF6 0%, #FDE8EE 25%, #D4EEFF 50%, #D8F5EA 75%, #FEFAF6 100%);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #E8899D, #C96B80);
+}
+
+.bg-gradient-warm {
+  background: linear-gradient(135deg, #E8B88A, #E8C94A);
+}
+
+.bg-gradient-cool {
+  background: linear-gradient(135deg, #7CB8CC, #7CC9A8);
+}
+
+.bg-gradient-purple {
+  background: linear-gradient(135deg, #B896D6, #7CB8CC);
+}
+
+/* ========== Blob Decorations ========== */
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Hide blobs on small screens to avoid visual clutter */
+@media (max-width: 768px) {
+  .blob {
+    opacity: 0.1;
+    filter: blur(80px);
+  }
+}
+
+/* ========== Mobile Bottom Nav ========== */
+
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  left: 16px;
+  right: 16px;
+  z-index: 50;
+  background: #FFFFFF;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(232, 224, 226, 0.6);
+  padding: 8px;
+}
+
+/* ========== PDF Export ========== */
+
+.pdf-export {
+  font-family: 'Quicksand', sans-serif;
+  background: white;
+  padding: 40px;
+}
+
+.pdf-export h1 {
+  color: #C96B80;
+}
+
+.pdf-export h2 {
+  color: #1A1A2E;
+  border-bottom: 2px solid #E8899D;
+  padding-bottom: 8px;
+}
+
+/* ========== Safe area for mobile bottom nav ========== */
+.has-bottom-nav {
+  padding-bottom: 80px;
+}
+
+@media (min-width: 769px) {
+  .has-bottom-nav {
+    padding-bottom: 0;
+  }
 }
