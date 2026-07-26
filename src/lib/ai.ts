@@ -12,11 +12,13 @@ interface AnalysisInput {
   fullName: string;
   className: string;
   academicScores: { subject: string; score: number }[];
+  aptitudeSubjects: { subject: string; isLiked: boolean }[];
   favoriteSubjects: string[];
   riasecScores: { R: number; I: number; A: number; S: number; E: number; C: number };
   softSkills: Record<string, number>;
   interests: string[];
   careerValues: Record<string, number>;
+  familyFinance: string;
 }
 
 export async function analyzeCareer(data: AnalysisInput) {
@@ -44,57 +46,80 @@ export async function analyzeCareer(data: AnalysisInput) {
     advancement: 'Cơ hội thăng tiến',
   };
 
-  const prompt = `Bạn là chuyên gia tư vấn hướng nghiệp cho học sinh THPT Việt Nam. Dựa trên dữ liệu chi tiết sau, hãy phân tích và gợi ý TOP 5 ngành nghề phù hợp nhất cho học sinh này.
+  const prompt = `Bạn là chuyên gia tư vấn hướng nghiệp xuất sắc cho học sinh THPT Việt Nam. Nhiệm vụ của bạn là định hướng nghề nghiệp đi sâu vào bản chất mỗi người, phân tích cá nhân hóa (không ai giống ai, mỗi người 1 tính, 1 năng lực riêng). Đánh giá tập trung vào sự chủ động đào tạo, phát triển và làm chủ tương lai. Dựa trên dữ liệu chi tiết sau, hãy phân tích và gợi ý TOP 5 ngành nghề phù hợp nhất.
 
 ## THÔNG TIN HỌC SINH
 - Họ tên: ${data.fullName}
 - Lớp: ${data.className}
+- Điều kiện tài chính gia đình dự kiến: ${data.familyFinance}
 
 ## 1. HỌC LỰC (Điểm trung bình năm, thang 10)
 ${data.academicScores.map(s => `- ${s.subject}: ${s.score}`).join('\n')}
 
-## 2. MÔN YÊU THÍCH
+## 2. MÔN NĂNG KHIẾU / THỂ CHẤT
+${data.aptitudeSubjects.map(s => `- ${s.subject}: ${s.isLiked ? 'Thích' : 'Không thích'}`).join('\n')}
+
+## 3. MÔN YÊU THÍCH
 ${data.favoriteSubjects.join(', ')}
 
-## 3. RIASEC PROFILE (Điểm tối đa mỗi nhóm: 35)
+## 4. RIASEC PROFILE
 ${sortedRiasec.map(([k, v]) => `- ${k}: ${v}/35`).join('\n')}
 → Mã RIASEC: ${topCode}
 
-## 4. KỸ NĂNG MỀM (Tự đánh giá 1-5)
+## 5. KỸ NĂNG MỀM (Tự đánh giá 1-5)
 ${Object.entries(data.softSkills).map(([k, v]) => `- ${softSkillNames[k] || k}: ${v}/5`).join('\n')}
 
-## 5. SỞ THÍCH
+## 6. SỞ THÍCH
 ${data.interests.join(', ')}
 
-## 6. GIÁ TRỊ NGHỀ NGHIỆP (Mức độ quan trọng 1-5)
+## 7. GIÁ TRỊ NGHỀ NGHIỆP (Mức độ quan trọng 1-5)
 ${Object.entries(data.careerValues).map(([k, v]) => `- ${careerValueNames[k] || k}: ${v}/5`).join('\n')}
 
 ---
 
-Hãy phân tích toàn diện và trả về KẾT QUẢ CHÍNH XÁC theo định dạng JSON sau (CHỈ trả về JSON thuần túy, KHÔNG có markdown code block, KHÔNG có text thừa, KHÔNG có \`\`\`json):
+Hãy trả về KẾT QUẢ CHÍNH XÁC theo định dạng JSON sau (CHỈ trả về JSON thuần túy, KHÔNG markdown code block, KHÔNG text thừa):
 
 {
   "topCareers": [
     {
-      "name": "Tên ngành nghề bằng tiếng Việt",
+      "name": "Tên ngành nghề cụ thể",
       "matchPercent": 95,
-      "reason": "Giải thích chi tiết (3-5 câu) tại sao ngành này phù hợp, dựa trên học lực, RIASEC, sở thích và kỹ năng của học sinh",
-      "improvements": ["Điểm cần cải thiện cụ thể 1", "Điểm cần cải thiện 2", "Điểm cần cải thiện 3"],
-      "relatedMajors": ["Ngành đại học liên quan 1", "Ngành đại học liên quan 2"]
+      "reason": "Lý do sâu sắc tại sao ngành này hợp với riêng học sinh này (tính cách, năng lực riêng).",
+      "jobDescription": "Công việc thực tế là làm gì? Những kỹ năng nào thực sự cần có?",
+      "trendAnalysis": {
+        "futurePotential": "Cập nhật dữ liệu từ 2024-nay: Trong 5-10 năm tới nghề này còn tồn tại/phát triển không? (Đặc biệt khối IT, AI).",
+        "recruitmentDemand": "Xu hướng hiện nay nhu cầu tuyển dụng có cao không? (Thừa hay thiếu nhân lực)"
+      },
+      "financialInsights": {
+        "averageSalary": "Mức lương tham khảo hiện nay",
+        "tuitionCompatibility": "Ngành này có phù hợp với điều kiện tài chính gia đình (${data.familyFinance}) không?"
+      },
+      "educationPath": {
+        "relatedMajors": ["Tên ngành học 1", "Tên ngành học 2"],
+        "topUniversities": ["Trường ĐH 1", "Trường ĐH 2"],
+        "admissionScoreTrend": "Điểm chuẩn các năm gần đây như thế nào?"
+      },
+      "developmentRoadmap": "Lộ trình đường dài (1 năm, 3 năm, 5 năm) để theo đuổi và thăng tiến.",
+      "weaknessSolutions": [
+        "Môn cần cải thiện: XYZ",
+        "Yếu điểm XYZ: Cần khắc phục bằng cách..."
+      ],
+      "usefulLinks": [
+        "Link tham khảo 1 (VD: https://coursera.org/...)",
+        "Link tham khảo 2"
+      ],
+      "improvements": ["Giải pháp ngắn gọn 1", "Giải pháp ngắn gọn 2"]
     }
   ],
-  "riasecProfile": "Mô tả chi tiết (4-6 câu) về tính cách RIASEC của học sinh dựa trên mã ${topCode}, bao gồm điểm mạnh, phong cách làm việc, môi trường phù hợp",
-  "overallAnalysis": "Phân tích tổng quan (5-7 câu) về tiềm năng của học sinh, kết hợp tất cả yếu tố, đưa ra lời khuyên tổng quát cho con đường sự nghiệp"
+  "riasecProfile": "Mô tả tính cách RIASEC, điểm mạnh, môi trường làm việc phù hợp",
+  "overallAnalysis": "Đánh giá tổng quan, lời khuyên đào tạo và phát triển tư duy làm chủ."
 }
 
 Lưu ý quan trọng:
-- Phải trả về ĐÚNG 5 ngành nghề trong topCareers
-- matchPercent phải từ 70-98, hợp lý dựa trên dữ liệu
-- Mỗi ngành phải có ÍT NHẤT 3 improvements cụ thể, khả thi
-- Mỗi ngành phải có ÍT NHẤT 2 relatedMajors (tên ngành đại học ở VN)
-- Phân tích phải CÁ NHÂN HÓA, không chung chung
-- Viết bằng tiếng Việt tự nhiên, thân thiện
-- CHỈ trả về JSON, KHÔNG có bất kỳ text nào khác`;
+- Trả về ĐÚNG 5 ngành nghề, viết súc tích nhưng đầy đủ ý.
+- Đánh giá sâu, cụ thể, không rập khuôn.
+- Dữ liệu xu hướng phải lấy bối cảnh thị trường thực tế.
+- JSON trả về phải là một Object hợp lệ, KHÔNG chứa text bên ngoài.`;
 
   console.log(`[AI] Calling FPT AI (${MODEL}) for ${data.fullName}...`);
 
@@ -110,8 +135,8 @@ Lưu ý quan trọng:
         content: prompt,
       },
     ],
-    temperature: 0.7,
-    max_tokens: 4000,
+    temperature: 0.5,
+    max_tokens: 6000,
   });
 
   const responseText = completion.choices[0]?.message?.content || '{}';

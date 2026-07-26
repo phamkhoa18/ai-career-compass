@@ -8,7 +8,7 @@ import Navbar from '@/components/ui/Navbar';
 import { RIASEC_ICONS } from '@/components/ui/riasec-icons';
 import { RIASEC_GROUP_INFO } from '@/data/riasec-questions';
 import { IAssessment } from '@/models/Assessment';
-import { PartyPopper, PieChart, UserRound, Target, GraduationCap, PenLine, Zap, Lightbulb, Download, RefreshCw, Home, Frown, Rocket, Briefcase, Star, Diamond, Loader2 } from 'lucide-react';
+import { PartyPopper, PieChart, UserRound, Target, GraduationCap, PenLine, Zap, Lightbulb, Download, RefreshCw, Home, Frown, Rocket, Briefcase, Star, Diamond, Loader2, TrendingUp, DollarSign, BookOpen, Link as LinkIcon, Compass, Flame } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas-pro';
@@ -221,20 +221,33 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
               </div>
               <div style={{ padding: '14px 20px', background: '#fff' }}>
                 <p style={{ fontSize: 13, color: '#4A4A5A', lineHeight: 1.7, marginBottom: 12 }}>{career.reason}</p>
-                {career.relatedMajors?.length > 0 && (
+                {career.educationPath?.relatedMajors?.length > 0 && (
                   <div style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1A2E', marginBottom: 6 }}>🎓 Ngành đại học liên quan:</div>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1A2E', marginBottom: 6 }}>🎓 Ngành đại học:</div>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {career.relatedMajors.map((m, j) => (
+                      {career.educationPath.relatedMajors.map((m, j) => (
                         <span key={j} style={{ display: 'inline-block', height: 22, lineHeight: '22px', textAlign: 'center', padding: '0 10px', background: '#D4EEFF', color: '#5A9AB5', fontSize: 11, fontWeight: 700, borderRadius: 12 }}>{m}</span>
                       ))}
                     </div>
                   </div>
                 )}
-                {career.improvements?.length > 0 && (
+                {career.financialInsights && (
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1A2E', marginBottom: 6 }}>💰 Tài chính & Mức lương:</div>
+                    <div style={{ fontSize: 12, color: '#5A5A6A' }}>• Mức lương: {career.financialInsights.averageSalary}</div>
+                    <div style={{ fontSize: 12, color: '#5A5A6A' }}>• Khả năng tài chính: {career.financialInsights.tuitionCompatibility}</div>
+                  </div>
+                )}
+                {career.trendAnalysis && (
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1A2E', marginBottom: 6 }}>📈 Xu hướng (5-10 năm):</div>
+                    <div style={{ fontSize: 12, color: '#5A5A6A' }}>{career.trendAnalysis.futurePotential}</div>
+                  </div>
+                )}
+                {career.weaknessSolutions?.length > 0 && (
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1A2E', marginBottom: 6 }}>⚡ Cần cải thiện:</div>
-                    {career.improvements.map((imp, j) => (
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1A2E', marginBottom: 6 }}>⚡ Khắc phục điểm yếu:</div>
+                    {career.weaknessSolutions.map((imp, j) => (
                       <div key={j} style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
                         <span style={{ color: '#E8A838', fontSize: 11 }}>•</span>
                         <span style={{ fontSize: 12, color: '#5A5A6A', lineHeight: 1.5 }}>{imp}</span>
@@ -346,20 +359,88 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                           <div className="mt-1"><Progress type="circle" percent={career.matchPercent} size={42} strokeColor="#E8899D" format={(p) => <span className="text-[10px] font-bold">{p}%</span>} /></div>
                         </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs md:text-sm text-text-secondary leading-relaxed mb-2">{career.reason}</p>
-                        {career.relatedMajors?.length > 0 && (
-                          <div className="mb-2">
-                            <p className="text-[10px] md:text-xs font-bold text-text-main mb-1 flex items-center gap-1"><GraduationCap size={12} /> Ngành đại học liên quan:</p>
-                            <div className="flex flex-wrap gap-1">{career.relatedMajors.map((m, j) => <span key={j} className="px-2 py-0.5 bg-secondary-light text-secondary-dark text-[10px] md:text-xs font-semibold rounded-full">{m}</span>)}</div>
+                      <div className="flex-1 mt-4 md:mt-0">
+                        {/* Reason */}
+                        <div className="bg-white/60 p-4 rounded-xl border border-gray-100 mb-4">
+                          <p className="text-xs md:text-sm text-text-secondary leading-relaxed font-medium">{career.reason}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          {/* Left Column */}
+                          <div className="space-y-4">
+                            {/* Job Description & Skills */}
+                            {career.jobDescription && (
+                              <div>
+                                <p className="text-xs font-bold text-text-main mb-1.5 flex items-center gap-1"><Briefcase size={14} className="text-primary"/> Thực tế công việc</p>
+                                <p className="text-[11px] text-text-secondary">{career.jobDescription}</p>
+                              </div>
+                            )}
+                            
+                            {/* Financial */}
+                            {career.financialInsights && (
+                              <div className="bg-green-50/50 p-3 rounded-lg border border-green-100">
+                                <p className="text-xs font-bold text-green-700 mb-1.5 flex items-center gap-1"><DollarSign size={14}/> Tài chính & Mức lương</p>
+                                <p className="text-[11px] text-gray-600 mb-1">• {career.financialInsights.averageSalary}</p>
+                                <p className="text-[11px] text-gray-600">• {career.financialInsights.tuitionCompatibility}</p>
+                              </div>
+                            )}
+
+                            {/* Education */}
+                            {career.educationPath && (
+                              <div>
+                                <p className="text-xs font-bold text-text-main mb-1.5 flex items-center gap-1"><GraduationCap size={14} className="text-secondary"/> Học gì? Ở đâu?</p>
+                                <div className="flex flex-wrap gap-1 mb-2">
+                                  {career.educationPath.relatedMajors?.map((m, j) => <span key={j} className="px-2 py-0.5 bg-secondary-light/30 text-secondary-dark text-[10px] font-semibold rounded-full">{m}</span>)}
+                                </div>
+                                {career.educationPath.topUniversities?.length > 0 && (
+                                  <p className="text-[11px] text-text-secondary line-clamp-2">Trường ĐH: {career.educationPath.topUniversities.join(', ')}</p>
+                                )}
+                              </div>
+                            )}
                           </div>
-                        )}
-                        {career.improvements?.length > 0 && (
-                          <div>
-                            <p className="text-[10px] md:text-xs font-bold text-text-main mb-1 flex items-center gap-1"><PenLine size={12} /> Cần cải thiện:</p>
-                            <div className="space-y-0.5">{career.improvements.map((imp, j) => (
-                              <div key={j} className="flex items-start gap-1.5"><Zap size={10} className="text-warning mt-0.5 flex-shrink-0" /><span className="text-[10px] md:text-xs text-text-secondary">{imp}</span></div>
-                            ))}</div>
+
+                          {/* Right Column */}
+                          <div className="space-y-4">
+                            {/* Trends */}
+                            {career.trendAnalysis && (
+                              <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                                <p className="text-xs font-bold text-blue-700 mb-1.5 flex items-center gap-1"><TrendingUp size={14}/> Xu hướng 5-10 năm</p>
+                                <p className="text-[11px] text-gray-600 mb-1">{career.trendAnalysis.futurePotential}</p>
+                                <p className="text-[11px] text-gray-600 font-medium">Nhu cầu: {career.trendAnalysis.recruitmentDemand}</p>
+                              </div>
+                            )}
+
+                            {/* Roadmap */}
+                            {career.developmentRoadmap && (
+                              <div>
+                                <p className="text-xs font-bold text-text-main mb-1.5 flex items-center gap-1"><Compass size={14} className="text-accent"/> Lộ trình phát triển</p>
+                                <p className="text-[11px] text-text-secondary">{career.developmentRoadmap}</p>
+                              </div>
+                            )}
+
+                            {/* Weakness */}
+                            {career.weaknessSolutions?.length > 0 && (
+                              <div>
+                                <p className="text-xs font-bold text-text-main mb-1.5 flex items-center gap-1"><Flame size={14} className="text-warning"/> Giải quyết yếu điểm</p>
+                                <div className="space-y-1">{career.weaknessSolutions.map((imp, j) => (
+                                  <div key={j} className="flex items-start gap-1.5"><Zap size={10} className="text-warning mt-0.5 flex-shrink-0" /><span className="text-[11px] text-text-secondary">{imp}</span></div>
+                                ))}</div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Links */}
+                        {career.usefulLinks?.length > 0 && (
+                          <div className="mt-2 pt-3 border-t border-gray-100">
+                            <p className="text-xs font-bold text-text-main mb-2 flex items-center gap-1"><LinkIcon size={12}/> Tài nguyên tham khảo</p>
+                            <div className="flex flex-col gap-1">
+                              {career.usefulLinks.map((link, j) => (
+                                <a key={j} href={link.match(/https?:\/\/[^\s]+/) ? link.match(/https?:\/\/[^\s]+/)?.[0] : '#'} target="_blank" rel="noopener noreferrer" className="text-[11px] text-primary hover:underline truncate">
+                                  {link}
+                                </a>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>

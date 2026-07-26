@@ -39,8 +39,25 @@ export interface ICareerRecommendation {
   name: string;
   matchPercent: number;
   reason: string;
+  jobDescription: string;
+  requiredSkills: string[];
+  trendAnalysis: {
+    futurePotential: string;
+    recruitmentDemand: string;
+  };
+  financialInsights: {
+    averageSalary: string;
+    tuitionCompatibility: string;
+  };
+  educationPath: {
+    relatedMajors: string[];
+    topUniversities: string[];
+    admissionScoreTrend: string;
+  };
+  developmentRoadmap: string;
+  weaknessSolutions: string[];
+  usefulLinks: string[];
   improvements: string[];
-  relatedMajors: string[];
 }
 
 export interface IAiResult {
@@ -54,7 +71,9 @@ export interface IAssessment extends Document {
   fullName: string;
   className: string;
   academicScores: IAcademicScore[];
+  aptitudeSubjects: { subject: string; subjectKey: string; isLiked: boolean }[];
   favoriteSubjects: string[];
+  familyFinance: string;
   careerValues: ICareerValues;
   riasecScores: IRiasecScores;
   riasecAnswers: number[];
@@ -76,7 +95,15 @@ const AssessmentSchema = new Schema<IAssessment>(
         score: { type: Number, required: true, min: 0, max: 10 },
       },
     ],
+    aptitudeSubjects: [
+      {
+        subject: { type: String, required: true },
+        subjectKey: { type: String, required: true },
+        isLiked: { type: Boolean, required: true },
+      },
+    ],
     favoriteSubjects: [{ type: String }],
+    familyFinance: { type: String, default: 'Trung bình' },
     careerValues: {
       income: { type: Number, min: 1, max: 5, default: 3 },
       stability: { type: Number, min: 1, max: 5, default: 3 },
@@ -111,8 +138,25 @@ const AssessmentSchema = new Schema<IAssessment>(
           name: { type: String },
           matchPercent: { type: Number },
           reason: { type: String },
+          jobDescription: { type: String },
+          requiredSkills: [{ type: String }],
+          trendAnalysis: {
+            futurePotential: { type: String },
+            recruitmentDemand: { type: String },
+          },
+          financialInsights: {
+            averageSalary: { type: String },
+            tuitionCompatibility: { type: String },
+          },
+          educationPath: {
+            relatedMajors: [{ type: String }],
+            topUniversities: [{ type: String }],
+            admissionScoreTrend: { type: String },
+          },
+          developmentRoadmap: { type: String },
+          weaknessSolutions: [{ type: String }],
+          usefulLinks: [{ type: String }],
           improvements: [{ type: String }],
-          relatedMajors: [{ type: String }],
         },
       ],
       riasecProfile: { type: String },

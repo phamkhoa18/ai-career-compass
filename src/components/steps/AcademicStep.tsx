@@ -36,7 +36,10 @@ export default function AcademicStep() {
 
   useEffect(() => {
     if (state.data.academicScores.length === 0) {
-      updateData({ academicScores: subjects.map((sub) => ({ subject: sub.name, subjectKey: sub.key, score: 0 })) });
+      updateData({
+        academicScores: subjects.filter(s => !['myThuat', 'amNhac', 'gdtc'].includes(s.key)).map((sub) => ({ subject: sub.name, subjectKey: sub.key, score: 0 })),
+        aptitudeSubjects: subjects.filter(s => ['myThuat', 'amNhac', 'gdtc'].includes(s.key)).map((sub) => ({ subject: sub.name, subjectKey: sub.key, isLiked: false }))
+      });
     }
   }, []);
 
@@ -44,12 +47,19 @@ export default function AcademicStep() {
     updateData({ academicScores: state.data.academicScores.map((item) => item.subjectKey === key ? { ...item, score: value || 0 } : item) });
   };
 
+  const handleAptitudeChange = (key: string, isLiked: boolean) => {
+    updateData({ aptitudeSubjects: state.data.aptitudeSubjects.map((item) => item.subjectKey === key ? { ...item, isLiked } : item) });
+  };
+
   const handleFavToggle = (name: string) => {
     const fav = state.data.favoriteSubjects;
     updateData({ favoriteSubjects: fav.includes(name) ? fav.filter((s) => s !== name) : [...fav, name] });
   };
 
-  const grouped = subjects.reduce((acc, sub) => {
+  const academicSubjectsList = subjects.filter(s => !['myThuat', 'amNhac', 'gdtc'].includes(s.key));
+  const aptitudeSubjectsList = subjects.filter(s => ['myThuat', 'amNhac', 'gdtc'].includes(s.key));
+
+  const grouped = academicSubjectsList.reduce((acc, sub) => {
     if (!acc[sub.category]) acc[sub.category] = [];
     acc[sub.category].push(sub);
     return acc;
@@ -153,6 +163,38 @@ export default function AcademicStep() {
             </div>
           );
         })}
+      </div>
+
+      {/* Aptitude Subjects (Thích / Không thích) */}
+      <div className="mt-4 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white">
+        <div className="w-full flex items-center justify-between p-3.5 md:p-4 bg-gradient-to-r from-orange-50 to-amber-50">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm" style={{ backgroundColor: '#F59E0B' }}>
+              <Heart size={16} className="text-white" strokeWidth={2} />
+            </div>
+            <span className="font-bold text-sm text-text-main">Môn năng khiếu / Thể chất</span>
+          </div>
+        </div>
+        <div className="divide-y divide-gray-50">
+          {aptitudeSubjectsList.map((sub) => {
+            const isLiked = state.data.aptitudeSubjects?.find((s) => s.subjectKey === sub.key)?.isLiked || false;
+            return (
+              <div key={sub.key} className="flex items-center justify-between gap-2 px-3.5 md:px-4 py-3 hover:bg-gray-50/50 transition-colors">
+                <span className="font-semibold text-sm text-text-main">{sub.name}</span>
+                <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
+                  <button onClick={() => handleAptitudeChange(sub.key, true)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${isLiked ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-main'}`}>
+                    👍 Thích
+                  </button>
+                  <button onClick={() => handleAptitudeChange(sub.key, false)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${!isLiked ? 'bg-gray-300 text-text-main shadow-sm' : 'text-text-secondary hover:text-text-main'}`}>
+                    👎 Không thích
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Favorites summary */}

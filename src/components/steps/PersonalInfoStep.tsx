@@ -48,6 +48,20 @@ export default function PersonalInfoStep() {
               style={{ paddingLeft: 16 }}
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-bold text-text-main mb-2">Điều kiện tài chính (Dự kiến học phí)</label>
+            <select
+              value={state.data.familyFinance}
+              onChange={(e) => updateData({ familyFinance: e.target.value })}
+              className="w-full h-14 rounded-2xl border border-gray-300 px-4 text-base font-medium text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors bg-white"
+            >
+              <option value="Khó khăn (< 20 triệu/năm)">Khó khăn (Dưới 20 triệu/năm)</option>
+              <option value="Trung bình (20-40 triệu/năm)">Trung bình (20 - 40 triệu/năm)</option>
+              <option value="Khá giả (> 40 triệu/năm)">Khá giả (Trên 40 triệu/năm)</option>
+            </select>
+            <p className="text-[11px] text-text-light mt-1.5 ml-1">Giúp AI gợi ý chính xác trường Đại học phù hợp với kinh tế gia đình.</p>
+          </div>
         </Form>
       </div>
 

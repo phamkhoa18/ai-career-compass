@@ -18,7 +18,9 @@ export interface AssessmentData {
 
   // Step 2: Academic
   academicScores: AcademicScore[];
+  aptitudeSubjects: { subject: string; subjectKey: string; isLiked: boolean }[];
   favoriteSubjects: string[];
+  familyFinance: string;
 
   // Step 3: RIASEC
   riasecAnswers: number[];
@@ -52,7 +54,9 @@ const initialData: AssessmentData = {
   fullName: '',
   className: '',
   academicScores: [],
+  aptitudeSubjects: [],
   favoriteSubjects: [],
+  familyFinance: 'Trung bình',
   riasecAnswers: new Array(42).fill(0),
   riasecScores: { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 },
   interests: [],
