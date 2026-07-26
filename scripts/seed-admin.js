@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '.env.local' });
+// We use node --env-file=.env.local to load env variables
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
