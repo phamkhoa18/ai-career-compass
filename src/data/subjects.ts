@@ -5,19 +5,21 @@ export interface Subject {
 }
 
 export const subjects: Subject[] = [
-  { key: 'toan', name: 'Toán', category: 'natural' },
   { key: 'nguVan', name: 'Ngữ văn', category: 'social' },
-  { key: 'tiengAnh', name: 'Tiếng Anh', category: 'language' },
-  { key: 'vatLy', name: 'Vật lý', category: 'natural' },
-  { key: 'hoaHoc', name: 'Hóa học', category: 'natural' },
-  { key: 'sinhHoc', name: 'Sinh học', category: 'natural' },
   { key: 'lichSu', name: 'Lịch sử', category: 'social' },
   { key: 'diaLy', name: 'Địa lý', category: 'social' },
-  { key: 'gdcd', name: 'GDCD', category: 'social' },
-  { key: 'tinHoc', name: 'Tin học', category: 'natural' },
+  { key: 'ktpl', name: 'Kinh tế & Pháp luật', category: 'social' },
   { key: 'congNghe', name: 'Công nghệ', category: 'other' },
+  { key: 'myThuat', name: 'Mỹ thuật', category: 'other' },
+  { key: 'amNhac', name: 'Âm nhạc', category: 'other' },
   { key: 'gdtc', name: 'Thể dục', category: 'other' },
   { key: 'gdqp', name: 'GDQP-AN', category: 'other' },
+  { key: 'toan', name: 'Toán', category: 'natural' },
+  { key: 'vatLy', name: 'Vật lí', category: 'natural' },
+  { key: 'hoaHoc', name: 'Hoá học', category: 'natural' },
+  { key: 'sinhHoc', name: 'Sinh học', category: 'natural' },
+  { key: 'tinHoc', name: 'Tin học', category: 'natural' },
+  { key: 'tiengAnh', name: 'Tiếng Anh', category: 'language' },
 ];
 
 export const interestOptions = [
