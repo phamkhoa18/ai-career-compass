@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { UNIVERSITIES, TuitionLevel, ScoreLevel } from '@/data/universities';
 
 // FPT AI Marketplace - OpenAI-compatible API
 const client = new OpenAI({
@@ -25,6 +26,46 @@ export async function analyzeCareer(data: AnalysisInput) {
   const riasecEntries = Object.entries(data.riasecScores) as [string, number][];
   const sortedRiasec = riasecEntries.sort((a, b) => b[1] - a[1]);
   const topCode = sortedRiasec.slice(0, 3).map(([k]) => k).join('');
+
+  // 1. Calculate Average Score
+  const validScores = data.academicScores.filter(s => s.score > 0);
+  const avgScore = validScores.length > 0 
+    ? validScores.reduce((acc, curr) => acc + curr.score, 0) / validScores.length 
+    : 0;
+  
+  let studentScoreLevel: ScoreLevel = 'Khó';
+  if (avgScore < 6.5) studentScoreLevel = 'Dễ';
+  else if (avgScore < 7.5) studentScoreLevel = 'Trung bình';
+  else if (avgScore < 8.5) studentScoreLevel = 'Khó';
+  else studentScoreLevel = 'Rất khó';
+
+  // 2. Map Family Finance (Fallback to all if unmapped)
+  // Matching values from AssessmentContext.tsx/Constants if possible, else substring match
+  const financeStr = data.familyFinance.toLowerCase();
+  let allowedTuitions: TuitionLevel[] = ['Thấp', 'Trung bình', 'Cao'];
+  if (financeStr.includes('khó khăn') || financeStr.includes('thấp')) {
+    allowedTuitions = ['Thấp'];
+  } else if (financeStr.includes('trung bình')) {
+    allowedTuitions = ['Thấp', 'Trung bình'];
+  }
+
+  // 3. Filter Universities (Relaxed filtering)
+  const filteredUniversities = UNIVERSITIES.filter(u => {
+    if (!allowedTuitions.includes(u.tuitionLevel)) return false;
+    
+    const scoreRank: Record<ScoreLevel, number> = { 'Dễ': 1, 'Trung bình': 2, 'Khó': 3, 'Rất khó': 4 };
+    const studentRank = scoreRank[studentScoreLevel];
+    const schoolRank = scoreRank[u.scoreLevel];
+    
+    // Cho phép trường ngang tầm, dễ hơn 1 bậc, hoặc khó hơn 1 bậc (thử thách)
+    if (Math.abs(schoolRank - studentRank) > 1) return false;
+    
+    return true;
+  });
+
+  const universitiesContext = filteredUniversities.map(u => 
+    `- [${u.region}] [${u.type}] ${u.name} (Học phí: ${u.tuitionLevel}, Đầu vào: ${u.scoreLevel}, Khối thi: ${u.admissionBlocks.join(', ')})`
+  ).join('\n');
 
   const softSkillNames: Record<string, string> = {
     communication: 'Giao tiếp',
@@ -55,6 +96,7 @@ export async function analyzeCareer(data: AnalysisInput) {
 
 ## 1. HỌC LỰC (Điểm trung bình năm, thang 10)
 ${data.academicScores.map(s => `- ${s.subject}: ${s.score}`).join('\n')}
+=> Điểm TB tham khảo: ${avgScore.toFixed(1)}/10 (${studentScoreLevel})
 
 ## 2. MÔN NĂNG KHIẾU / THỂ CHẤT
 ${data.aptitudeSubjects.map(s => `- ${s.subject}: ${s.isLiked ? 'Thích' : 'Không thích'}`).join('\n')}
@@ -77,6 +119,11 @@ ${Object.entries(data.careerValues).map(([k, v]) => `- ${careerValueNames[k] || 
 
 ---
 
+## DANH SÁCH TRƯỜNG ĐẠI HỌC THAM KHẢO (Đã lọc theo tài chính và học lực)
+${universitiesContext || '(Chưa có dữ liệu, hãy tự suy luận các trường phù hợp nhất)'}
+
+---
+
 Hãy trả về KẾT QUẢ CHÍNH XÁC theo định dạng JSON sau (CHỈ trả về JSON thuần túy, KHÔNG markdown code block, KHÔNG text thừa):
 
 {
@@ -86,6 +133,7 @@ Hãy trả về KẾT QUẢ CHÍNH XÁC theo định dạng JSON sau (CHỈ tr�
       "matchPercent": 95,
       "reason": "Lý do sâu sắc tại sao ngành này hợp với riêng học sinh này (tính cách, năng lực riêng).",
       "jobDescription": "Công việc thực tế là làm gì? Những kỹ năng nào thực sự cần có?",
+      "requiredSkills": ["Kỹ năng 1", "Kỹ năng 2"],
       "trendAnalysis": {
         "futurePotential": "Cập nhật dữ liệu từ 2024-nay: Trong 5-10 năm tới nghề này còn tồn tại/phát triển không? (Đặc biệt khối IT, AI).",
         "recruitmentDemand": "Xu hướng hiện nay nhu cầu tuyển dụng có cao không? (Thừa hay thiếu nhân lực)"
@@ -96,8 +144,12 @@ Hãy trả về KẾT QUẢ CHÍNH XÁC theo định dạng JSON sau (CHỈ tr�
       },
       "educationPath": {
         "relatedMajors": ["Tên ngành học 1", "Tên ngành học 2"],
-        "topUniversities": ["Trường ĐH 1", "Trường ĐH 2"],
-        "admissionScoreTrend": "Điểm chuẩn các năm gần đây như thế nào?"
+        "topUniversities": [
+          "📍 Miền Bắc: [Các trường được chọn từ danh sách gợi ý]",
+          "📍 Miền Trung: [Các trường được chọn từ danh sách gợi ý]",
+          "📍 Miền Nam: [Các trường được chọn từ danh sách gợi ý]"
+        ],
+        "admissionScoreTrend": "Tổ hợp môn thi phổ biến (VD: A00, A01, D01). Mức điểm chuẩn các năm gần đây."
       },
       "developmentRoadmap": "Lộ trình đường dài (1 năm, 3 năm, 5 năm) để theo đuổi và thăng tiến.",
       "weaknessSolutions": [

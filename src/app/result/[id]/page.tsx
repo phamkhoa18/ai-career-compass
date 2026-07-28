@@ -221,14 +221,34 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
               </div>
               <div style={{ padding: '14px 20px', background: '#fff' }}>
                 <p style={{ fontSize: 13, color: '#4A4A5A', lineHeight: 1.7, marginBottom: 12 }}>{career.reason}</p>
+                {career.requiredSkills?.length > 0 && (
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1A2E', marginBottom: 6 }}>💡 Kỹ năng cần có:</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {career.requiredSkills.map((m, j) => (
+                        <span key={j} style={{ display: 'inline-block', height: 22, lineHeight: '22px', textAlign: 'center', padding: '0 10px', background: '#FDE8EE', color: '#C96B80', fontSize: 11, fontWeight: 700, borderRadius: 12 }}>{m}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {career.educationPath?.relatedMajors?.length > 0 && (
                   <div style={{ marginBottom: 10 }}>
                     <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1A2E', marginBottom: 6 }}>🎓 Ngành đại học:</div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
                       {career.educationPath.relatedMajors.map((m, j) => (
                         <span key={j} style={{ display: 'inline-block', height: 22, lineHeight: '22px', textAlign: 'center', padding: '0 10px', background: '#D4EEFF', color: '#5A9AB5', fontSize: 11, fontWeight: 700, borderRadius: 12 }}>{m}</span>
                       ))}
                     </div>
+                    {career.educationPath.topUniversities?.length > 0 && (
+                      <div style={{ marginBottom: 6 }}>
+                        {career.educationPath.topUniversities.map((uni, j) => (
+                          <div key={j} style={{ fontSize: 12, color: '#5A5A6A', marginBottom: 2 }}>{uni}</div>
+                        ))}
+                      </div>
+                    )}
+                    {career.educationPath.admissionScoreTrend && (
+                      <div style={{ fontSize: 12, color: '#5A5A6A', fontWeight: 600 }}>• Điểm chuẩn: {career.educationPath.admissionScoreTrend}</div>
+                    )}
                   </div>
                 )}
                 {career.financialInsights && (
@@ -372,7 +392,15 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                             {career.jobDescription && (
                               <div>
                                 <p className="text-xs font-bold text-text-main mb-1.5 flex items-center gap-1"><Briefcase size={14} className="text-primary"/> Thực tế công việc</p>
-                                <p className="text-[11px] text-text-secondary">{career.jobDescription}</p>
+                                <p className="text-[11px] text-text-secondary mb-2">{career.jobDescription}</p>
+                                {career.requiredSkills?.length > 0 && (
+                                  <div>
+                                    <p className="text-[11px] font-bold text-text-main mb-1">Kỹ năng cần có:</p>
+                                    <div className="flex flex-wrap gap-1">
+                                      {career.requiredSkills.map((s, j) => <span key={j} className="px-2 py-0.5 bg-primary-light/20 text-primary-dark text-[10px] font-medium rounded">{s}</span>)}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
                             
@@ -393,7 +421,10 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                                   {career.educationPath.relatedMajors?.map((m, j) => <span key={j} className="px-2 py-0.5 bg-secondary-light/30 text-secondary-dark text-[10px] font-semibold rounded-full">{m}</span>)}
                                 </div>
                                 {career.educationPath.topUniversities?.length > 0 && (
-                                  <p className="text-[11px] text-text-secondary line-clamp-2">Trường ĐH: {career.educationPath.topUniversities.join(', ')}</p>
+                                  <p className="text-[11px] text-text-secondary line-clamp-2 mb-1">Trường ĐH: {career.educationPath.topUniversities.join(', ')}</p>
+                                )}
+                                {career.educationPath.admissionScoreTrend && (
+                                  <p className="text-[11px] text-text-secondary">Điểm chuẩn: {career.educationPath.admissionScoreTrend}</p>
                                 )}
                               </div>
                             )}

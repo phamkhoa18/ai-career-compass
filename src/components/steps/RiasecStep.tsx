@@ -244,7 +244,7 @@ export default function RiasecStep() {
         placement="bottom"
         onClose={() => setDrawerVisible(false)}
         open={drawerVisible}
-        height="75vh"
+        size="large"
         styles={{ body: { padding: '20px' }, header: { padding: '16px 20px', borderBottom: '1px solid #f0f0f0' } }}
         className="rounded-t-[24px]"
       >

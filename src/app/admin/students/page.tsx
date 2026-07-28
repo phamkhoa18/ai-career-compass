@@ -384,9 +384,36 @@ export default function StudentsPage() {
                       <Text strong style={{ fontSize: 16, color: '#0f172a' }}>{career.name}</Text>
                       <Tag color="blue" style={{ borderRadius: 12, margin: 0 }}>{career.matchPercent}% Phù hợp</Tag>
                     </div>
-                    <Paragraph type="secondary" style={{ marginBottom: 0, fontSize: 13 }}>
+                    <Paragraph type="secondary" style={{ marginBottom: 12, fontSize: 13 }}>
                       {career.reason}
                     </Paragraph>
+                    {career.requiredSkills?.length > 0 && (
+                      <div style={{ marginBottom: 8 }}>
+                        <Text strong style={{ fontSize: 13, color: '#475569', display: 'block', marginBottom: 4 }}>Kỹ năng cần có:</Text>
+                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                          {career.requiredSkills.map((s: string, i: number) => (
+                            <Tag key={i} color="purple" style={{ margin: 0, borderRadius: 12 }}>{s}</Tag>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {career.educationPath?.topUniversities?.length > 0 && (
+                      <div style={{ marginBottom: 8 }}>
+                        <Text strong style={{ fontSize: 13, color: '#475569', display: 'block', marginBottom: 4 }}>Trường tham khảo:</Text>
+                        <ul style={{ paddingLeft: 16, margin: 0, fontSize: 13, color: '#64748b' }}>
+                          {career.educationPath.topUniversities.map((uni: string, i: number) => (
+                            <li key={i}>{uni}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {career.educationPath?.admissionScoreTrend && (
+                      <div style={{ marginTop: 4 }}>
+                        <Text style={{ fontSize: 13, color: '#059669' }}>
+                          <span style={{ fontWeight: 600 }}>Điểm chuẩn:</span> {career.educationPath.admissionScoreTrend}
+                        </Text>
+                      </div>
+                    )}
                   </Card>
                 ))}
               </Col>
