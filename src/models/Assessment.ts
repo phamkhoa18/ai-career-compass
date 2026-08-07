@@ -77,6 +77,9 @@ export interface IAssessment extends Document {
   careerValues: ICareerValues;
   riasecScores: IRiasecScores;
   riasecAnswers: number[];
+  mbtiAnswers: string[];
+  mbtiResult?: string;
+  mbtiScores?: Record<string, number>;
   softSkills: ISoftSkills;
   interests: string[];
   aiResult?: IAiResult;
@@ -121,6 +124,9 @@ const AssessmentSchema = new Schema<IAssessment>(
       C: { type: Number, default: 0 },
     },
     riasecAnswers: [{ type: Number }],
+    mbtiAnswers: [{ type: String }],
+    mbtiResult: { type: String },
+    mbtiScores: { type: Map, of: Number },
     softSkills: {
       communication: { type: Number, min: 1, max: 5, default: 3 },
       teamwork: { type: Number, min: 1, max: 5, default: 3 },

@@ -1,5 +1,8 @@
 import OpenAI from 'openai';
 import { UNIVERSITIES, TuitionLevel, ScoreLevel } from '@/data/universities';
+import { mbtiQuestions } from '@/data/mbti-questions';
+import { interestOptions } from '@/data/subjects';
+import { MAX_MBTI_SCORES } from '@/utils/mbti';
 
 // FPT AI Marketplace - OpenAI-compatible API
 const client = new OpenAI({
@@ -16,6 +19,9 @@ interface AnalysisInput {
   aptitudeSubjects: { subject: string; isLiked: boolean }[];
   favoriteSubjects: string[];
   riasecScores: { R: number; I: number; A: number; S: number; E: number; C: number };
+  mbtiAnswers: string[];
+  mbtiResult?: string;
+  mbtiScores?: Record<string, number>;
   softSkills: Record<string, number>;
   interests: string[];
   careerValues: Record<string, number>;
@@ -26,6 +32,9 @@ export async function analyzeCareer(data: AnalysisInput) {
   const riasecEntries = Object.entries(data.riasecScores) as [string, number][];
   const sortedRiasec = riasecEntries.sort((a, b) => b[1] - a[1]);
   const topCode = sortedRiasec.slice(0, 3).map(([k]) => k).join('');
+
+  // We no longer need to map 70 answers because we use the calculated MBTI code directly
+  const mbtiCode = data.mbtiResult || 'Chưa xác định';
 
   // 1. Calculate Average Score
   const validScores = data.academicScores.filter(s => s.score > 0);
@@ -105,16 +114,27 @@ ${data.aptitudeSubjects.map(s => `- ${s.subject}: ${s.isLiked ? 'Thích' : 'Khô
 ${data.favoriteSubjects.join(', ')}
 
 ## 4. RIASEC PROFILE
-${sortedRiasec.map(([k, v]) => `- ${k}: ${v}/35`).join('\n')}
+${sortedRiasec.map(([k, v]) => `- ${k}: ${v}/40`).join('\n')}
 → Mã RIASEC: ${topCode}
 
-## 5. KỸ NĂNG MỀM (Tự đánh giá 1-5)
+## 5. MBTI PROFILE (CHI TIẾT)
+Mã tính cách MBTI: ${mbtiCode}
+Phân tích cường độ (Intensity):
+- Năng lượng (E/I): E (${data.mbtiScores?.E || 0}/${MAX_MBTI_SCORES.E}) - I (${data.mbtiScores?.I || 0}/${MAX_MBTI_SCORES.E})
+- Nhận thức (S/N): S (${data.mbtiScores?.S || 0}/${MAX_MBTI_SCORES.S}) - N (${data.mbtiScores?.N || 0}/${MAX_MBTI_SCORES.S})
+- Quyết định (T/F): T (${data.mbtiScores?.T || 0}/${MAX_MBTI_SCORES.T}) - F (${data.mbtiScores?.F || 0}/${MAX_MBTI_SCORES.T})
+- Lối sống (J/P): J (${data.mbtiScores?.J || 0}/${MAX_MBTI_SCORES.J}) - P (${data.mbtiScores?.P || 0}/${MAX_MBTI_SCORES.J})
+
+## 6. KỸ NĂNG MỀM (Tự đánh giá 1-5)
 ${Object.entries(data.softSkills).map(([k, v]) => `- ${softSkillNames[k] || k}: ${v}/5`).join('\n')}
 
-## 6. SỞ THÍCH
-${data.interests.join(', ')}
+## 7. SỞ THÍCH
+${data.interests.map(key => {
+  const opt = interestOptions.find(o => o.key === key);
+  return opt ? opt.label : key;
+}).join(', ')}
 
-## 7. GIÁ TRỊ NGHỀ NGHIỆP (Mức độ quan trọng 1-5)
+## 8. GIÁ TRỊ NGHỀ NGHIỆP (Mức độ quan trọng 1-5)
 ${Object.entries(data.careerValues).map(([k, v]) => `- ${careerValueNames[k] || k}: ${v}/5`).join('\n')}
 
 ---

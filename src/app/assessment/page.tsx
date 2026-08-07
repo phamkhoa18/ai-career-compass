@@ -10,16 +10,18 @@ import AcademicStep from '@/components/steps/AcademicStep';
 import RiasecStep from '@/components/steps/RiasecStep';
 import InterestsStep from '@/components/steps/InterestsStep';
 import CareerValuesStep from '@/components/steps/CareerValuesStep';
+import MbtiStep from '@/components/steps/MbtiStep';
 import {
   UserRound, BookOpen, Microscope, Heart, Trophy,
-  ArrowLeft, ArrowRight, Rocket, GraduationCap, Check,
+  ArrowLeft, ArrowRight, Rocket, GraduationCap, Check, Brain,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 const steps: { title: string; desc: string; Icon: LucideIcon; color: string }[] = [
   { title: 'Thông tin', desc: 'Họ tên, lớp', Icon: UserRound, color: '#E8899D' },
   { title: 'Học lực', desc: 'Điểm các môn', Icon: BookOpen, color: '#7CB8CC' },
-  { title: 'RIASEC', desc: '42 câu hỏi', Icon: Microscope, color: '#B896D6' },
+  { title: 'RIASEC', desc: '60 câu hỏi', Icon: Microscope, color: '#B896D6' },
+  { title: 'MBTI', desc: '70 câu hỏi', Icon: Brain, color: '#6366f1' },
   { title: 'Sở thích', desc: 'Kỹ năng mềm', Icon: Heart, color: '#E8B88A' },
   { title: 'Giá trị', desc: 'Nghề nghiệp', Icon: Trophy, color: '#7CC9A8' },
 ];
@@ -41,10 +43,14 @@ function AssessmentForm() {
         if (data.academicScores.filter((s) => s.score > 0).length < 3) { api.warning({ description: 'Vui lòng nhập điểm ít nhất 3 môn!', placement: 'topRight' }); return false; }
         return true;
       case 2:
-        const ans = data.riasecAnswers.filter((a) => a > 0).length;
-        if (ans < 42) { api.warning({ description: `Bạn còn ${42 - ans} câu chưa trả lời!`, placement: 'topRight' }); return false; }
+        const ansRiasec = data.riasecAnswers.filter((a) => a !== -1).length;
+        if (ansRiasec < 60) { api.warning({ description: `Bạn còn ${60 - ansRiasec} câu RIASEC chưa trả lời!`, placement: 'topRight' }); return false; }
         return true;
       case 3:
+        const ansMbti = data.mbtiAnswers.filter((a) => a !== '').length;
+        if (ansMbti < 70) { api.warning({ description: `Bạn còn ${70 - ansMbti} câu MBTI chưa trả lời!`, placement: 'topRight' }); return false; }
+        return true;
+      case 4:
         if (data.interests.length === 0) { api.warning({ description: 'Vui lòng chọn ít nhất 1 sở thích!', placement: 'topRight' }); return false; }
         return true;
       default: return true;
@@ -92,8 +98,9 @@ function AssessmentForm() {
       case 0: return <PersonalInfoStep />;
       case 1: return <AcademicStep />;
       case 2: return <RiasecStep />;
-      case 3: return <InterestsStep />;
-      case 4: return <CareerValuesStep />;
+      case 3: return <MbtiStep />;
+      case 4: return <InterestsStep />;
+      case 5: return <CareerValuesStep />;
       default: return null;
     }
   };

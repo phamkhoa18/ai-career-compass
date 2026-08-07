@@ -140,7 +140,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
   const riasecEntries = Object.entries(data.riasecScores) as [string, number][];
   const sortedRiasec = [...riasecEntries].sort((a, b) => b[1] - a[1]);
   const topCode = sortedRiasec.slice(0, 3).map(([k]) => k).join('');
-  const radarData = riasecEntries.map(([key, value]) => ({ subject: RIASEC_GROUP_INFO[key as keyof typeof RIASEC_GROUP_INFO].nameVi, value, fullMark: 35 }));
+  const radarData = riasecEntries.map(([key, value]) => ({ subject: RIASEC_GROUP_INFO[key as keyof typeof RIASEC_GROUP_INFO].nameVi, value, fullMark: 40 }));
 
   return (
     <div className="min-h-screen bg-cream relative overflow-hidden has-bottom-nav">
@@ -177,12 +177,12 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {sortedRiasec.map(([key, value]) => {
               const info = RIASEC_GROUP_INFO[key as keyof typeof RIASEC_GROUP_INFO];
-              const pct = Math.round((value / 35) * 100);
+              const pct = Math.round((value / 40) * 100);
               return (
                 <div key={key} style={{ flex: '1 1 calc(33% - 8px)', background: '#FAFAFA', borderRadius: 12, padding: '12px 16px', border: '1px solid #F0F0F0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                     <span style={{ fontSize: 13, fontWeight: 800, color: '#1A1A2E' }}>{key} — {info.nameVi}</span>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: info.color }}>{value}/35</span>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: info.color }}>{value}/40</span>
                   </div>
                   <div style={{ height: 8, background: '#E8E0E2', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${pct}%`, background: info.color, borderRadius: 4 }} />
@@ -321,7 +321,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                   <RadarChart data={radarData}>
                     <PolarGrid stroke="#E8E0E2" />
                     <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fontWeight: 600, fill: '#1A1A2E' }} />
-                    <PolarRadiusAxis angle={30} domain={[0, 35]} tick={{ fontSize: 8, fill: '#8A8A9A' }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 40]} tick={{ fontSize: 8, fill: '#8A8A9A' }} />
                     <Radar name="Điểm" dataKey="value" stroke="#E8899D" fill="#E8899D" fillOpacity={0.3} strokeWidth={2} />
                     <Tooltip />
                   </RadarChart>
@@ -349,8 +349,8 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                         <RIcon size={12} strokeWidth={2.5} />
                         <span className="text-[10px] md:text-xs font-bold text-text-main">{info.nameVi}</span>
                       </div>
-                      <div className="flex-1"><Progress percent={Math.round((value / 35) * 100)} showInfo={false} strokeColor={info.color} railColor="#E8E0E2" size={['100%', 7]} /></div>
-                      <span className="text-[10px] font-bold text-text-main w-8 text-right">{value}/35</span>
+                      <div className="flex-1"><Progress percent={Math.round((value / 40) * 100)} showInfo={false} strokeColor={info.color} railColor="#E8E0E2" size={['100%', 7]} /></div>
+                      <span className="text-[10px] font-bold text-text-main w-8 text-right">{value}/40</span>
                     </div>
                   );
                 })}

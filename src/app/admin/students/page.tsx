@@ -7,6 +7,19 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { RIASEC_GROUP_INFO } from '@/data/riasec-questions';
+import { MAX_MBTI_SCORES } from '@/utils/mbti';
+import { interestOptions, softSkillsList, careerValuesList } from '@/data/subjects';
+
+const softSkillNames: Record<string, string> = {
+  communication: 'Giao tiếp', teamwork: 'Làm việc nhóm', problemSolving: 'Giải quyết vấn đề',
+  leadership: 'Lãnh đạo', timeManagement: 'Quản lý thời gian', creativity: 'Sáng tạo',
+  criticalThinking: 'Tư duy phản biện', adaptability: 'Thích ứng',
+};
+
+const careerValueNames: Record<string, string> = {
+  income: 'Thu nhập cao', stability: 'Ổn định công việc', creativity: 'Tính sáng tạo',
+  socialImpact: 'Đóng góp xã hội', workLifeBalance: 'Cân bằng cuộc sống', advancement: 'Cơ hội thăng tiến',
+};
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -275,6 +288,50 @@ export default function StudentsPage() {
     });
   };
 
+  const renderMbtiProgress = (scores: Record<string, number>, resultCode?: string) => {
+    if (!scores || Object.keys(scores).length === 0) return null;
+    const pairs = [
+      { left: 'E', right: 'I', leftName: 'Hướng ngoại', rightName: 'Hướng nội', total: MAX_MBTI_SCORES.E, color: '#3b82f6' },
+      { left: 'S', right: 'N', leftName: 'Cảm giác', rightName: 'Trực giác', total: MAX_MBTI_SCORES.S, color: '#10b981' },
+      { left: 'T', right: 'F', leftName: 'Lý trí', rightName: 'Cảm xúc', total: MAX_MBTI_SCORES.T, color: '#8b5cf6' },
+      { left: 'J', right: 'P', leftName: 'Nguyên tắc', rightName: 'Linh hoạt', total: MAX_MBTI_SCORES.J, color: '#f59e0b' },
+    ];
+
+    return (
+      <div style={{ marginTop: 24, padding: '16px', background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <Title level={5} style={{ margin: 0 }}>Chỉ số MBTI</Title>
+          <Tag color="purple" style={{ margin: 0, fontSize: 14, fontWeight: 'bold' }}>{resultCode || 'Chưa có'}</Tag>
+        </div>
+        {pairs.map(pair => {
+          const leftScore = scores[pair.left] || 0;
+          const rightScore = scores[pair.right] || 0;
+          const percent = Math.round((leftScore / pair.total) * 100);
+          
+          return (
+            <div key={pair.left} style={{ marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <Text strong style={{ fontSize: 12, color: leftScore >= rightScore ? pair.color : '#94a3b8' }}>
+                  {pair.leftName} ({pair.left}): {leftScore}
+                </Text>
+                <Text strong style={{ fontSize: 12, color: rightScore > leftScore ? pair.color : '#94a3b8' }}>
+                  {rightScore} :{pair.rightName} ({pair.right})
+                </Text>
+              </div>
+              <Progress 
+                percent={percent} 
+                showInfo={false} 
+                strokeColor={pair.color}
+                trailColor="#cbd5e1"
+                size="small"
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="animate-fade-in-up">
       {contextHolder}
@@ -364,7 +421,49 @@ export default function StudentsPage() {
                   {subject.subject}: {subject.score}
                 </Tag>
               ))}
+              <Tag 
+                color="purple"
+                style={{ fontSize: 14, padding: '4px 12px', borderRadius: 16 }}
+              >
+                MBTI: {studentDetails.mbtiResult ? studentDetails.mbtiResult : `${studentDetails.mbtiAnswers?.filter((a: string) => a).length || 0}/70 câu`}
+              </Tag>
             </div>
+
+            {/* Tài chính gia đình */}
+            {studentDetails.familyFinance && (
+              <div style={{ marginBottom: 16 }}>
+                <Text strong style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>Điều kiện tài chính:</Text>
+                <Tag color="gold" style={{ fontSize: 13, padding: '4px 12px', borderRadius: 12 }}>
+                  {studentDetails.familyFinance}
+                </Tag>
+              </div>
+            )}
+
+            {/* Môn yêu thích */}
+            {studentDetails.favoriteSubjects?.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <Text strong style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>Môn yêu thích:</Text>
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {studentDetails.favoriteSubjects.map((sub: string) => (
+                    <Tag key={sub} color="magenta" style={{ margin: 0, borderRadius: 12 }}>{sub}</Tag>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Môn năng khiếu */}
+            {studentDetails.aptitudeSubjects?.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <Text strong style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>Môn năng khiếu / Thể chất:</Text>
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {studentDetails.aptitudeSubjects.map((sub: any) => (
+                    <Tag key={sub.subjectKey} color={sub.isLiked ? 'green' : 'default'} style={{ margin: 0, borderRadius: 12 }}>
+                      {sub.subject}: {sub.isLiked ? '👍 Thích' : '👎 Không thích'}
+                    </Tag>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <Divider />
 
@@ -373,6 +472,7 @@ export default function StudentsPage() {
                 <Title level={4}>3. Bản đồ tính cách RIASEC</Title>
                 <div style={{ paddingRight: 16 }}>
                   {renderRiasecProgress(studentDetails.riasecScores || {})}
+                  {renderMbtiProgress(studentDetails.mbtiScores || {}, studentDetails.mbtiResult)}
                 </div>
               </Col>
               
@@ -416,6 +516,51 @@ export default function StudentsPage() {
                     )}
                   </Card>
                 ))}
+
+                {/* Sở thích */}
+                {studentDetails.interests?.length > 0 && (
+                  <div style={{ marginTop: 24, padding: '16px', background: '#fdf2f8', borderRadius: 12, border: '1px solid #fce7f3' }}>
+                    <Title level={5} style={{ margin: '0 0 8px 0', color: '#be185d' }}>💖 Sở thích</Title>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {studentDetails.interests.map((key: string) => {
+                        const opt = interestOptions.find(o => o.key === key);
+                        return (
+                          <Tag key={key} color="pink" style={{ margin: 0, borderRadius: 12, fontSize: 12 }}>
+                            {opt ? opt.label : key}
+                          </Tag>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Kỹ năng mềm */}
+                {studentDetails.softSkills && (
+                  <div style={{ marginTop: 16, padding: '16px', background: '#f0fdf4', borderRadius: 12, border: '1px solid #dcfce7' }}>
+                    <Title level={5} style={{ margin: '0 0 8px 0', color: '#15803d' }}>⚡ Kỹ năng mềm</Title>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {Object.entries(studentDetails.softSkills).map(([key, val]) => (
+                        <Tag key={key} color={Number(val) >= 4 ? 'green' : Number(val) >= 3 ? 'blue' : 'orange'} style={{ margin: 0, borderRadius: 12, fontSize: 12 }}>
+                          {softSkillNames[key] || key}: {String(val)}/5
+                        </Tag>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Giá trị nghề nghiệp */}
+                {studentDetails.careerValues && (
+                  <div style={{ marginTop: 16, padding: '16px', background: '#fffbeb', borderRadius: 12, border: '1px solid #fef3c7' }}>
+                    <Title level={5} style={{ margin: '0 0 8px 0', color: '#b45309' }}>🎯 Giá trị nghề nghiệp</Title>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {Object.entries(studentDetails.careerValues).map(([key, val]) => (
+                        <Tag key={key} color={Number(val) >= 4 ? 'gold' : Number(val) >= 3 ? 'cyan' : 'default'} style={{ margin: 0, borderRadius: 12, fontSize: 12 }}>
+                          {careerValueNames[key] || key}: {'⭐'.repeat(Number(val))}
+                        </Tag>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </Col>
             </Row>
           </div>

@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import { analyzeCareer } from '@/lib/ai';
+import { calculateMBTI } from '@/utils/mbti';
+
+export const maxDuration = 60; // Allow up to 60 seconds for AI processing
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
     const data = await request.json();
+
+    const mbtiCalc = calculateMBTI(data.mbtiAnswers);
 
     // Create assessment first
     const assessment = new Assessment({
@@ -19,6 +24,9 @@ export async function POST(request: NextRequest) {
       careerValues: data.careerValues,
       riasecScores: data.riasecScores,
       riasecAnswers: data.riasecAnswers,
+      mbtiAnswers: data.mbtiAnswers,
+      mbtiResult: mbtiCalc.code,
+      mbtiScores: mbtiCalc.scores,
       softSkills: data.softSkills,
       interests: data.interests,
     });
@@ -35,6 +43,9 @@ export async function POST(request: NextRequest) {
         familyFinance: data.familyFinance,
         aptitudeSubjects: data.aptitudeSubjects,
         riasecScores: data.riasecScores,
+        mbtiAnswers: data.mbtiAnswers,
+        mbtiResult: mbtiCalc.code,
+        mbtiScores: mbtiCalc.scores,
         softSkills: data.softSkills,
         interests: data.interests,
         careerValues: data.careerValues,
@@ -70,10 +81,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ id: assessment._id, success: true });
-  } catch (error) {
-    console.error('Assessment creation failed:', error);
+  } catch (error: any) {
+    console.error("API ERROR:", error);
     return NextResponse.json(
-      { error: 'Failed to create assessment' },
+      { error: 'Failed to create assessment', details: error.message },
       { status: 500 }
     );
   }

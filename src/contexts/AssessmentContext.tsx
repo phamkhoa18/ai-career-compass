@@ -26,7 +26,10 @@ export interface AssessmentData {
   riasecAnswers: number[];
   riasecScores: IRiasecScores;
 
-  // Step 4: Interests & Soft Skills
+  // Step 4: MBTI
+  mbtiAnswers: string[];
+
+  // Step 5: Interests & Soft Skills
   interests: string[];
   softSkills: ISoftSkills;
 
@@ -57,8 +60,9 @@ const initialData: AssessmentData = {
   aptitudeSubjects: [],
   favoriteSubjects: [],
   familyFinance: 'Trung bình',
-  riasecAnswers: new Array(42).fill(0),
+  riasecAnswers: new Array(60).fill(-1),
   riasecScores: { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 },
+  mbtiAnswers: new Array(70).fill(''),
   interests: [],
   softSkills: {
     communication: 3,
@@ -161,7 +165,7 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
   }, [state.currentStep, state.data, state.isHydrated]);
 
   const nextStep = useCallback(() => {
-    if (state.currentStep < 4) dispatch({ type: 'SET_STEP', payload: state.currentStep + 1 });
+    if (state.currentStep < 5) dispatch({ type: 'SET_STEP', payload: state.currentStep + 1 });
   }, [state.currentStep]);
 
   const prevStep = useCallback(() => {
