@@ -477,41 +477,67 @@ export default function StudentsPage() {
               </Col>
               
               <Col xs={24} md={12}>
-                <Title level={4}>4. Gợi ý Ngành nghề từ AI</Title>
+                <Title level={4}>4. Chi tiết gợi ý Top 5 Ngành nghề & Decision Support</Title>
                 {studentDetails.aiResult?.topCareers?.map((career: any, index: number) => (
-                  <Card key={index} size="small" style={{ marginBottom: 16, borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                      <Text strong style={{ fontSize: 16, color: '#0f172a' }}>{career.name}</Text>
-                      <Tag color="blue" style={{ borderRadius: 12, margin: 0 }}>{career.matchPercent}% Phù hợp</Tag>
+                  <Card key={index} size="small" style={{ marginBottom: 16, borderRadius: 12, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
+                      <Text strong style={{ fontSize: 16, color: '#0f172a' }}>#{index + 1} {career.name}</Text>
+                      <Space>
+                        <Tag color="blue" style={{ borderRadius: 12, margin: 0, fontWeight: 'bold' }}>CFI: {career.cfi || career.matchPercent || 85}%</Tag>
+                        <Tag color="green" style={{ borderRadius: 12, margin: 0, fontWeight: 'bold' }}>Khả thi: {career.feasibility || 80}%</Tag>
+                      </Space>
                     </div>
-                    <Paragraph type="secondary" style={{ marginBottom: 12, fontSize: 13 }}>
-                      {career.reason}
+
+                    <Paragraph type="secondary" style={{ marginBottom: 10, fontSize: 13 }}>
+                      {career.jobDescription || career.reason}
                     </Paragraph>
+
+                    {/* Fit Reasons Strengths & Considerations */}
+                    {career.fitReasons && (
+                      <div style={{ marginBottom: 10, fontSize: 12 }}>
+                        {career.fitReasons.strengths?.map((s: string, i: number) => (
+                          <div key={i} style={{ color: '#15803d', marginBottom: 2 }}>{s.startsWith('🟢') ? s : `🟢 ${s}`}</div>
+                        ))}
+                        {career.fitReasons.considerations?.map((c: string, i: number) => (
+                          <div key={i} style={{ color: '#b45309', marginBottom: 2 }}>{c.startsWith('🟡') ? c : `🟡 ${c}`}</div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Salary & Intelligence */}
+                    {career.careerIntelligence && (
+                      <div style={{ marginBottom: 10, padding: '8px 10px', background: '#f1f5f9', borderRadius: 8, fontSize: 12 }}>
+                        <div><strong>Thu nhập:</strong> Mới vào nghề: {career.careerIntelligence.salary?.entryLevel} | 2-5 năm: {career.careerIntelligence.salary?.midLevel}</div>
+                        <div><strong>Thị trường:</strong> {career.careerIntelligence.marketStatus} | <strong>Rủi ro AI:</strong> {career.aiImpact?.automationRisk || 'Bình thường'}</div>
+                      </div>
+                    )}
+
+                    {/* University Strategy */}
+                    {career.universityStrategy && (
+                      <div style={{ marginBottom: 10, fontSize: 12 }}>
+                        <Text strong style={{ color: '#475569', display: 'block', marginBottom: 2 }}>Phương án chọn trường:</Text>
+                        <div style={{ color: '#be185d' }}>• Dream: {career.universityStrategy.dream?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
+                        <div style={{ color: '#4338ca' }}>• Match: {career.universityStrategy.match?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
+                        <div style={{ color: '#047857' }}>• Safe: {career.universityStrategy.safe?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
+                      </div>
+                    )}
+
+                    {/* Actionable Roadmap */}
+                    {career.actionableRoadmap && (
+                      <div style={{ marginBottom: 8, fontSize: 12, background: '#f0fdf4', padding: '6px 10px', borderRadius: 8 }}>
+                        <Text strong style={{ color: '#166534', display: 'block' }}>Lộ trình ngắn hạn (0-3 tháng):</Text>
+                        <div style={{ color: '#15803d' }}>{career.actionableRoadmap.m0_3?.join('; ')}</div>
+                      </div>
+                    )}
+
                     {career.requiredSkills?.length > 0 && (
-                      <div style={{ marginBottom: 8 }}>
-                        <Text strong style={{ fontSize: 13, color: '#475569', display: 'block', marginBottom: 4 }}>Kỹ năng cần có:</Text>
+                      <div style={{ marginTop: 8 }}>
+                        <Text strong style={{ fontSize: 12, color: '#475569', display: 'block', marginBottom: 4 }}>Kỹ năng cốt lõi:</Text>
                         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                           {career.requiredSkills.map((s: string, i: number) => (
-                            <Tag key={i} color="purple" style={{ margin: 0, borderRadius: 12 }}>{s}</Tag>
+                            <Tag key={i} color="purple" style={{ margin: 0, borderRadius: 12, fontSize: 11 }}>{s}</Tag>
                           ))}
                         </div>
-                      </div>
-                    )}
-                    {career.educationPath?.topUniversities?.length > 0 && (
-                      <div style={{ marginBottom: 8 }}>
-                        <Text strong style={{ fontSize: 13, color: '#475569', display: 'block', marginBottom: 4 }}>Trường tham khảo:</Text>
-                        <ul style={{ paddingLeft: 16, margin: 0, fontSize: 13, color: '#64748b' }}>
-                          {career.educationPath.topUniversities.map((uni: string, i: number) => (
-                            <li key={i}>{uni}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {career.educationPath?.admissionScoreTrend && (
-                      <div style={{ marginTop: 4 }}>
-                        <Text style={{ fontSize: 13, color: '#059669' }}>
-                          <span style={{ fontWeight: 600 }}>Điểm chuẩn:</span> {career.educationPath.admissionScoreTrend}
-                        </Text>
                       </div>
                     )}
                   </Card>

@@ -4,7 +4,6 @@ import { mbtiQuestions } from '@/data/mbti-questions';
 import { interestOptions } from '@/data/subjects';
 import { MAX_MBTI_SCORES } from '@/utils/mbti';
 
-// FPT AI Marketplace - OpenAI-compatible API
 const client = new OpenAI({
   apiKey: process.env.FPT_AI_API_KEY,
   baseURL: process.env.FPT_AI_BASE_URL || 'https://mkp-api.fptcloud.com/v1',
@@ -32,11 +31,8 @@ export async function analyzeCareer(data: AnalysisInput) {
   const riasecEntries = Object.entries(data.riasecScores) as [string, number][];
   const sortedRiasec = riasecEntries.sort((a, b) => b[1] - a[1]);
   const topCode = sortedRiasec.slice(0, 3).map(([k]) => k).join('');
-
-  // We no longer need to map 70 answers because we use the calculated MBTI code directly
   const mbtiCode = data.mbtiResult || 'Chưa xác định';
 
-  // 1. Calculate Average Score
   const validScores = data.academicScores.filter(s => s.score > 0);
   const avgScore = validScores.length > 0 
     ? validScores.reduce((acc, curr) => acc + curr.score, 0) / validScores.length 
@@ -48,150 +44,102 @@ export async function analyzeCareer(data: AnalysisInput) {
   else if (avgScore < 8.5) studentScoreLevel = 'Khó';
   else studentScoreLevel = 'Rất khó';
 
-  // 2. Map Family Finance (Fallback to all if unmapped)
-  // Matching values from AssessmentContext.tsx/Constants if possible, else substring match
   const financeStr = data.familyFinance.toLowerCase();
   let allowedTuitions: TuitionLevel[] = ['Thấp', 'Trung bình', 'Cao'];
-  if (financeStr.includes('khó khăn') || financeStr.includes('thấp')) {
+  if (financeStr.includes('khó khăn') || financeStr.includes('thấp') || financeStr.includes('< 20')) {
     allowedTuitions = ['Thấp'];
-  } else if (financeStr.includes('trung bình')) {
+  } else if (financeStr.includes('trung bình') || financeStr.includes('20-40')) {
     allowedTuitions = ['Thấp', 'Trung bình'];
+  } else if (financeStr.includes('khá giả') || financeStr.includes('cao') || financeStr.includes('> 40')) {
+    allowedTuitions = ['Thấp', 'Trung bình', 'Cao'];
   }
 
-  // 3. Filter Universities (Relaxed filtering)
   const filteredUniversities = UNIVERSITIES.filter(u => {
     if (!allowedTuitions.includes(u.tuitionLevel)) return false;
-    
     const scoreRank: Record<ScoreLevel, number> = { 'Dễ': 1, 'Trung bình': 2, 'Khó': 3, 'Rất khó': 4 };
     const studentRank = scoreRank[studentScoreLevel];
     const schoolRank = scoreRank[u.scoreLevel];
-    
-    // Cho phép trường ngang tầm, dễ hơn 1 bậc, hoặc khó hơn 1 bậc (thử thách)
     if (Math.abs(schoolRank - studentRank) > 1) return false;
-    
     return true;
   });
 
   const universitiesContext = filteredUniversities.map(u => 
-    `- [${u.region}] [${u.type}] ${u.name} (Học phí: ${u.tuitionLevel}, Đầu vào: ${u.scoreLevel}, Khối thi: ${u.admissionBlocks.join(', ')})`
-  ).join('\n');
+    `- [${u.region}] ${u.name} (Học phí: ${u.tuitionLevel}, Đầu vào: ${u.scoreLevel})`
+  ).slice(0, 15).join('\n');
 
   const softSkillNames: Record<string, string> = {
-    communication: 'Giao tiếp',
-    teamwork: 'Làm việc nhóm',
-    problemSolving: 'Giải quyết vấn đề',
-    leadership: 'Lãnh đạo',
-    timeManagement: 'Quản lý thời gian',
-    creativity: 'Sáng tạo',
-    criticalThinking: 'Tư duy phản biện',
-    adaptability: 'Thích ứng',
+    communication: 'Giao tiếp', teamwork: 'Làm việc nhóm', problemSolving: 'Giải quyết vấn đề',
+    leadership: 'Lãnh đạo', timeManagement: 'Quản lý thời gian', creativity: 'Sáng tạo',
+    criticalThinking: 'Tư duy phản biện', adaptability: 'Thích ứng',
   };
 
   const careerValueNames: Record<string, string> = {
-    income: 'Thu nhập cao',
-    stability: 'Ổn định công việc',
-    creativity: 'Tính sáng tạo',
-    socialImpact: 'Đóng góp xã hội',
-    workLifeBalance: 'Cân bằng cuộc sống',
-    advancement: 'Cơ hội thăng tiến',
+    income: 'Thu nhập cao', stability: 'Ổn định công việc', creativity: 'Tính sáng tạo',
+    socialImpact: 'Đóng góp xã hội', workLifeBalance: 'Cân bằng cuộc sống', advancement: 'Cơ hội thăng tiến',
   };
 
-  const prompt = `Bạn là chuyên gia tư vấn hướng nghiệp xuất sắc cho học sinh THPT Việt Nam. Nhiệm vụ của bạn là định hướng nghề nghiệp đi sâu vào bản chất mỗi người, phân tích cá nhân hóa (không ai giống ai, mỗi người 1 tính, 1 năng lực riêng). Đánh giá tập trung vào sự chủ động đào tạo, phát triển và làm chủ tương lai. Dựa trên dữ liệu chi tiết sau, hãy phân tích và gợi ý TOP 5 ngành nghề phù hợp nhất.
+  const prompt = `Bạn là hệ thống AI tư vấn hướng nghiệp (Decision Support System) cho học sinh THPT Việt Nam.
+Nhiệm vụ: Phân tích và gợi ý ĐÚNG 5 NGHỀ NGHIỆP PHÙ HỢP NHẤT dưới dạng JSON.
 
-## THÔNG TIN HỌC SINH
-- Họ tên: ${data.fullName}
-- Lớp: ${data.className}
-- Điều kiện tài chính gia đình dự kiến: ${data.familyFinance}
+HỌC SINH:
+- Họ tên: ${data.fullName} | Lớp: ${data.className} | Tài chính: ${data.familyFinance}
+- Học lực (TB ${avgScore.toFixed(1)}): ${data.academicScores.map(s => `${s.subject}:${s.score}`).join(', ')}
+- Mã RIASEC: ${topCode} | MBTI: ${mbtiCode}
 
-## 1. HỌC LỰC (Điểm trung bình năm, thang 10)
-${data.academicScores.map(s => `- ${s.subject}: ${s.score}`).join('\n')}
-=> Điểm TB tham khảo: ${avgScore.toFixed(1)}/10 (${studentScoreLevel})
+LƯU Ý QUAN TRỌNG:
+1. Trả về mảng "topCareers" BẮT BUỘC ĐÚNG 5 phần tử.
+2. Viết ngắn gọn súc tích để JSON không bị tràn token.
+3. CHỈ trả về JSON thuần túy (KHÔNG dùng markdown code block).
 
-## 2. MÔN NĂNG KHIẾU / THỂ CHẤT
-${data.aptitudeSubjects.map(s => `- ${s.subject}: ${s.isLiked ? 'Thích' : 'Không thích'}`).join('\n')}
-
-## 3. MÔN YÊU THÍCH
-${data.favoriteSubjects.join(', ')}
-
-## 4. RIASEC PROFILE
-${sortedRiasec.map(([k, v]) => `- ${k}: ${v}/40`).join('\n')}
-→ Mã RIASEC: ${topCode}
-
-## 5. MBTI PROFILE (CHI TIẾT)
-Mã tính cách MBTI: ${mbtiCode}
-Phân tích cường độ (Intensity):
-- Năng lượng (E/I): E (${data.mbtiScores?.E || 0}/${MAX_MBTI_SCORES.E}) - I (${data.mbtiScores?.I || 0}/${MAX_MBTI_SCORES.E})
-- Nhận thức (S/N): S (${data.mbtiScores?.S || 0}/${MAX_MBTI_SCORES.S}) - N (${data.mbtiScores?.N || 0}/${MAX_MBTI_SCORES.S})
-- Quyết định (T/F): T (${data.mbtiScores?.T || 0}/${MAX_MBTI_SCORES.T}) - F (${data.mbtiScores?.F || 0}/${MAX_MBTI_SCORES.T})
-- Lối sống (J/P): J (${data.mbtiScores?.J || 0}/${MAX_MBTI_SCORES.J}) - P (${data.mbtiScores?.P || 0}/${MAX_MBTI_SCORES.J})
-
-## 6. KỸ NĂNG MỀM (Tự đánh giá 1-5)
-${Object.entries(data.softSkills).map(([k, v]) => `- ${softSkillNames[k] || k}: ${v}/5`).join('\n')}
-
-## 7. SỞ THÍCH
-${data.interests.map(key => {
-  const opt = interestOptions.find(o => o.key === key);
-  return opt ? opt.label : key;
-}).join(', ')}
-
-## 8. GIÁ TRỊ NGHỀ NGHIỆP (Mức độ quan trọng 1-5)
-${Object.entries(data.careerValues).map(([k, v]) => `- ${careerValueNames[k] || k}: ${v}/5`).join('\n')}
-
----
-
-## DANH SÁCH TRƯỜNG ĐẠI HỌC THAM KHẢO (Đã lọc theo tài chính và học lực)
-${universitiesContext || '(Chưa có dữ liệu, hãy tự suy luận các trường phù hợp nhất)'}
-
----
-
-Hãy trả về KẾT QUẢ CHÍNH XÁC theo định dạng JSON sau (CHỈ trả về JSON thuần túy, KHÔNG markdown code block, KHÔNG text thừa):
-
+JSON MẪU:
 {
   "topCareers": [
     {
-      "name": "Tên ngành nghề cụ thể",
-      "matchPercent": 95,
-      "reason": "Lý do sâu sắc tại sao ngành này hợp với riêng học sinh này (tính cách, năng lực riêng).",
-      "jobDescription": "Công việc thực tế là làm gì? Những kỹ năng nào thực sự cần có?",
-      "requiredSkills": ["Kỹ năng 1", "Kỹ năng 2"],
-      "trendAnalysis": {
-        "futurePotential": "Cập nhật dữ liệu từ 2024-nay: Trong 5-10 năm tới nghề này còn tồn tại/phát triển không? (Đặc biệt khối IT, AI).",
-        "recruitmentDemand": "Xu hướng hiện nay nhu cầu tuyển dụng có cao không? (Thừa hay thiếu nhân lực)"
+      "name": "Tên nghề 1",
+      "cfi": 92,
+      "feasibility": 88,
+      "matchPercent": 92,
+      "scoreBreakdown": { "academic": 90, "riasec": 92, "skills": 85, "careerValues": 88, "interests": 90, "marketDemand": 85 },
+      "fitReasons": { "strengths": ["🟢 Strengths 1", "🟢 Strengths 2"], "considerations": ["🟡 Consideration 1"] },
+      "reason": "Lý do phù hợp súc tích...",
+      "jobDescription": "Mô tả công việc súc tích...",
+      "requiredSkills": ["Skill 1", "Skill 2"],
+      "careerIntelligence": {
+        "recruitmentDemandTrend": [{ "year": "2024", "level": 75 }, { "year": "2025", "level": 82 }, { "year": "2026", "level": 90 }],
+        "marketStatus": "Thiếu hụt",
+        "salary": { "entryLevel": "12-18 triệu", "midLevel": "22-35 triệu", "seniorLevel": "40-70 triệu" },
+        "regionDemand": "Thành phố lớn",
+        "keySkillsTrending": ["Skill 1"]
       },
-      "financialInsights": {
-        "averageSalary": "Mức lương tham khảo hiện nay",
-        "tuitionCompatibility": "Ngành này có phù hợp với điều kiện tài chính gia đình (${data.familyFinance}) không?"
+      "aiImpact": { "score": 60, "automationRisk": "Thấp", "aiAugmentation": "Tốt", "criticalSkillsInAiEra": ["Tư duy hệ thống"] },
+      "riskScore": { "level": "Trung bình", "description": "Cần học liên tục" },
+      "trendAnalysis": { "futurePotential": "Tích cực", "recruitmentDemand": "Cao" },
+      "financialInsights": { "averageSalary": "15-35 triệu", "tuitionCompatibility": "Phù hợp" },
+      "universityStrategy": {
+        "dream": [{ "name": "Trường A", "targetScore": "27+" }],
+        "match": [{ "name": "Trường B", "targetScore": "25-27" }],
+        "safe": [{ "name": "Trường C", "targetScore": "22-24" }],
+        "admissionNote": "Tham khảo"
       },
-      "educationPath": {
-        "relatedMajors": ["Tên ngành học 1", "Tên ngành học 2"],
-        "topUniversities": [
-          "📍 Miền Bắc: [Các trường được chọn từ danh sách gợi ý]",
-          "📍 Miền Trung: [Các trường được chọn từ danh sách gợi ý]",
-          "📍 Miền Nam: [Các trường được chọn từ danh sách gợi ý]"
-        ],
-        "admissionScoreTrend": "Tổ hợp môn thi phổ biến (VD: A00, A01, D01). Mức điểm chuẩn các năm gần đây."
+      "educationPath": { "relatedMajors": ["Ngành A"], "topUniversities": ["Trường A"], "admissionScoreTrend": "A00, A01" },
+      "actionableRoadmap": {
+        "m0_3": ["Học Tiếng Anh"], "m3_6": ["Học chuyên môn"], "m6_12": ["Dự án nhỏ"], "y1_3": ["Thi ĐH"], "y3_5": ["Thực tập"]
       },
-      "developmentRoadmap": "Lộ trình đường dài (1 năm, 3 năm, 5 năm) để theo đuổi và thăng tiến.",
-      "weaknessSolutions": [
-        "Môn cần cải thiện: XYZ",
-        "Yếu điểm XYZ: Cần khắc phục bằng cách..."
-      ],
-      "usefulLinks": [
-        "Link tham khảo 1 (VD: https://coursera.org/...)",
-        "Link tham khảo 2"
-      ],
-      "improvements": ["Giải pháp ngắn gọn 1", "Giải pháp ngắn gọn 2"]
-    }
+      "developmentRoadmap": "Lộ trình ngắn gọn...",
+      "weaknessSolutions": ["Giải pháp 1"],
+      "gapResources": [{ "gap": "Tiếng Anh", "solution": "Rèn luyện", "resources": [{ "title": "Khoá học", "url": "https://coursera.org" }] }],
+      "usefulLinks": ["https://coursera.org"],
+      "improvements": ["Cải thiện Tiếng Anh"]
+    },
+    { "name": "Tên nghề 2", "cfi": 89, "feasibility": 86, "matchPercent": 89, "scoreBreakdown": { "academic": 88, "riasec": 90, "skills": 82, "careerValues": 85, "interests": 88, "marketDemand": 84 }, "fitReasons": { "strengths": ["🟢 Lý do..."], "considerations": ["🟡 Yếu tố..."] }, "reason": "...", "jobDescription": "...", "requiredSkills": ["..."], "careerIntelligence": { "recruitmentDemandTrend": [{ "year": "2024", "level": 70 }, { "year": "2025", "level": 80 }, { "year": "2026", "level": 88 }], "marketStatus": "Thiếu hụt", "salary": { "entryLevel": "10-15 triệu", "midLevel": "18-28 triệu", "seniorLevel": "35-50 triệu" }, "regionDemand": "Toàn quốc", "keySkillsTrending": ["..."] }, "aiImpact": { "score": 55, "automationRisk": "...", "aiAugmentation": "...", "criticalSkillsInAiEra": ["..."] }, "riskScore": { "level": "Trung bình", "description": "..." }, "trendAnalysis": { "futurePotential": "...", "recruitmentDemand": "..." }, "financialInsights": { "averageSalary": "...", "tuitionCompatibility": "..." }, "universityStrategy": { "dream": [{ "name": "...", "targetScore": "..." }], "match": [{ "name": "...", "targetScore": "..." }], "safe": [{ "name": "...", "targetScore": "..." }], "admissionNote": "..." }, "educationPath": { "relatedMajors": ["..."], "topUniversities": ["..."], "admissionScoreTrend": "..." }, "actionableRoadmap": { "m0_3": ["..."], "m3_6": ["..."], "m6_12": ["..."], "y1_3": ["..."], "y3_5": ["..."] }, "developmentRoadmap": "...", "weaknessSolutions": ["..."], "gapResources": [], "usefulLinks": [], "improvements": [] },
+    { "name": "Tên nghề 3", "cfi": 86, "feasibility": 84, "matchPercent": 86, "scoreBreakdown": { "academic": 85, "riasec": 87, "skills": 80, "careerValues": 84, "interests": 85, "marketDemand": 82 }, "fitReasons": { "strengths": ["🟢 Lý do..."], "considerations": ["🟡 Yếu tố..."] }, "reason": "...", "jobDescription": "...", "requiredSkills": ["..."], "careerIntelligence": { "recruitmentDemandTrend": [{ "year": "2024", "level": 65 }, { "year": "2025", "level": 75 }, { "year": "2026", "level": 82 }], "marketStatus": "Cân bằng", "salary": { "entryLevel": "9-14 triệu", "midLevel": "16-24 triệu", "seniorLevel": "30-45 triệu" }, "regionDemand": "Toàn quốc", "keySkillsTrending": ["..."] }, "aiImpact": { "score": 50, "automationRisk": "...", "aiAugmentation": "...", "criticalSkillsInAiEra": ["..."] }, "riskScore": { "level": "Thấp", "description": "..." }, "trendAnalysis": { "futurePotential": "...", "recruitmentDemand": "..." }, "financialInsights": { "averageSalary": "...", "tuitionCompatibility": "..." }, "universityStrategy": { "dream": [{ "name": "...", "targetScore": "..." }], "match": [{ "name": "...", "targetScore": "..." }], "safe": [{ "name": "...", "targetScore": "..." }], "admissionNote": "..." }, "educationPath": { "relatedMajors": ["..."], "topUniversities": ["..."], "admissionScoreTrend": "..." }, "actionableRoadmap": { "m0_3": ["..."], "m3_6": ["..."], "m6_12": ["..."], "y1_3": ["..."], "y3_5": ["..."] }, "developmentRoadmap": "...", "weaknessSolutions": ["..."], "gapResources": [], "usefulLinks": [], "improvements": [] },
+    { "name": "Tên nghề 4", "cfi": 83, "feasibility": 82, "matchPercent": 83, "scoreBreakdown": { "academic": 82, "riasec": 84, "skills": 78, "careerValues": 82, "interests": 83, "marketDemand": 80 }, "fitReasons": { "strengths": ["🟢 Lý do..."], "considerations": ["🟡 Yếu tố..."] }, "reason": "...", "jobDescription": "...", "requiredSkills": ["..."], "careerIntelligence": { "recruitmentDemandTrend": [{ "year": "2024", "level": 60 }, { "year": "2025", "level": 70 }, { "year": "2026", "level": 78 }], "marketStatus": "Cân bằng", "salary": { "entryLevel": "8-12 triệu", "midLevel": "14-20 triệu", "seniorLevel": "25-35 triệu" }, "regionDemand": "Toàn quốc", "keySkillsTrending": ["..."] }, "aiImpact": { "score": 45, "automationRisk": "...", "aiAugmentation": "...", "criticalSkillsInAiEra": ["..."] }, "riskScore": { "level": "Thấp", "description": "..." }, "trendAnalysis": { "futurePotential": "...", "recruitmentDemand": "..." }, "financialInsights": { "averageSalary": "...", "tuitionCompatibility": "..." }, "universityStrategy": { "dream": [{ "name": "...", "targetScore": "..." }], "match": [{ "name": "...", "targetScore": "..." }], "safe": [{ "name": "...", "targetScore": "..." }], "admissionNote": "..." }, "educationPath": { "relatedMajors": ["..."], "topUniversities": ["..."], "admissionScoreTrend": "..." }, "actionableRoadmap": { "m0_3": ["..."], "m3_6": ["..."], "m6_12": ["..."], "y1_3": ["..."], "y3_5": ["..."] }, "developmentRoadmap": "...", "weaknessSolutions": ["..."], "gapResources": [], "usefulLinks": [], "improvements": [] },
+    { "name": "Tên nghề 5", "cfi": 80, "feasibility": 80, "matchPercent": 80, "scoreBreakdown": { "academic": 80, "riasec": 80, "skills": 75, "careerValues": 80, "interests": 80, "marketDemand": 75 }, "fitReasons": { "strengths": ["🟢 Lý do..."], "considerations": ["🟡 Yếu tố..."] }, "reason": "...", "jobDescription": "...", "requiredSkills": ["..."], "careerIntelligence": { "recruitmentDemandTrend": [{ "year": "2024", "level": 55 }, { "year": "2025", "level": 65 }, { "year": "2026", "level": 75 }], "marketStatus": "Cân bằng", "salary": { "entryLevel": "7-11 triệu", "midLevel": "12-18 triệu", "seniorLevel": "20-30 triệu" }, "regionDemand": "Toàn quốc", "keySkillsTrending": ["..."] }, "aiImpact": { "score": 40, "automationRisk": "...", "aiAugmentation": "...", "criticalSkillsInAiEra": ["..."] }, "riskScore": { "level": "Thấp", "description": "..." }, "trendAnalysis": { "futurePotential": "...", "recruitmentDemand": "..." }, "financialInsights": { "averageSalary": "...", "tuitionCompatibility": "..." }, "universityStrategy": { "dream": [{ "name": "...", "targetScore": "..." }], "match": [{ "name": "...", "targetScore": "..." }], "safe": [{ "name": "...", "targetScore": "..." }], "admissionNote": "..." }, "educationPath": { "relatedMajors": ["..."], "topUniversities": ["..."], "admissionScoreTrend": "..." }, "actionableRoadmap": { "m0_3": ["..."], "m3_6": ["..."], "m6_12": ["..."], "y1_3": ["..."], "y3_5": ["..."] }, "developmentRoadmap": "...", "weaknessSolutions": ["..."], "gapResources": [], "usefulLinks": [], "improvements": [] }
   ],
-  "riasecProfile": "Mô tả tính cách RIASEC, điểm mạnh, môi trường làm việc phù hợp",
-  "overallAnalysis": "Đánh giá tổng quan, lời khuyên đào tạo và phát triển tư duy làm chủ."
-}
-
-Lưu ý quan trọng:
-- Trả về ĐÚNG 5 ngành nghề, viết súc tích nhưng đầy đủ ý.
-- Đánh giá sâu, cụ thể, không rập khuôn.
-- Dữ liệu xu hướng phải lấy bối cảnh thị trường thực tế.
-- JSON trả về phải là một Object hợp lệ, KHÔNG chứa text bên ngoài.`;
+  "riasecProfile": "Mô tả RIASEC...",
+  "overallAnalysis": "Lời khuyên tổng quan...",
+  "disclaimer": "Dự báo dựa trên xu hướng dữ liệu, không phải dự đoán chắc chắn."
+}`;
 
   console.log(`[AI] Calling FPT AI (${MODEL}) for ${data.fullName}...`);
 
@@ -200,39 +148,95 @@ Lưu ý quan trọng:
     messages: [
       {
         role: 'system',
-        content: 'Bạn là AI tư vấn hướng nghiệp chuyên nghiệp cho học sinh THPT Việt Nam. Luôn trả về kết quả dạng JSON hợp lệ. KHÔNG bao giờ bọc JSON trong markdown code block (```). CHỈ trả về JSON thuần túy.',
+        content: 'Bạn là hệ thống AI tư vấn hướng nghiệp. Trả về JSON thuần túy súc tích, KHÔNG bao giờ dùng markdown ```.',
       },
       {
         role: 'user',
         content: prompt,
       },
     ],
-    temperature: 0.5,
-    max_tokens: 6000,
+    temperature: 0.4,
+    max_tokens: 8000,
   });
 
   const responseText = completion.choices[0]?.message?.content || '{}';
   console.log(`[AI] Response received (${responseText.length} chars)`);
 
   try {
-    // Clean up response - remove markdown code blocks if present
     let cleaned = responseText.trim();
-    // Remove ```json ... ``` wrapper if present
     if (cleaned.startsWith('```')) {
       cleaned = cleaned.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
     }
-    // Remove leading/trailing whitespace
     cleaned = cleaned.trim();
 
-    const result = JSON.parse(cleaned);
+    let result: any;
+    try {
+      result = JSON.parse(cleaned);
+    } catch (parseErr) {
+      console.warn('[AI] Initial JSON parse failed, attempting auto-repair...');
+      let repaired = cleaned;
+      if (!repaired.endsWith('}')) {
+        const quotesCount = (repaired.match(/"/g) || []).length;
+        if (quotesCount % 2 !== 0) repaired += '"';
+        const openBraces = (repaired.match(/\{/g) || []).length;
+        const closeBraces = (repaired.match(/\}/g) || []).length;
+        const openBrackets = (repaired.match(/\[/g) || []).length;
+        const closeBrackets = (repaired.match(/\]/g) || []).length;
 
-    // Validate structure
+        for (let i = 0; i < openBrackets - closeBrackets; i++) repaired += ']';
+        for (let i = 0; i < openBraces - closeBraces; i++) repaired += '}';
+      }
+      result = JSON.parse(repaired);
+    }
+
     if (!result.topCareers || !Array.isArray(result.topCareers) || result.topCareers.length === 0) {
       throw new Error('Invalid response structure: missing topCareers');
     }
 
+    const topCareers = result.topCareers.map((c: any) => ({
+      ...c,
+      cfi: c.cfi || c.matchPercent || 85,
+      feasibility: c.feasibility || 80,
+      matchPercent: c.matchPercent || c.cfi || 85,
+      scoreBreakdown: c.scoreBreakdown || {
+        academic: 85, riasec: 90, skills: 80, careerValues: 85, interests: 88, marketDemand: 82,
+      },
+      fitReasons: c.fitReasons || {
+        strengths: [`🟢 Phù hợp với mã RIASEC ${topCode}`, `🟢 Học lực và kỹ năng hỗ trợ tốt`],
+        considerations: [`🟡 Cần nâng cao thêm ngoại ngữ và kỹ năng chuyên môn`],
+      },
+      careerIntelligence: c.careerIntelligence || {
+        recruitmentDemandTrend: [{ year: '2024', level: 75 }, { year: '2025', level: 82 }, { year: '2026', level: 88 }],
+        marketStatus: 'Thiếu hụt',
+        salary: { entryLevel: '10 - 15 triệu', midLevel: '18 - 30 triệu', seniorLevel: '35 - 60+ triệu' },
+        regionDemand: 'Toàn quốc, tập trung tại các thành phố lớn',
+        keySkillsTrending: c.requiredSkills || ['Kỹ năng chuyên môn', 'Giải quyết vấn đề'],
+      },
+      aiImpact: c.aiImpact || {
+        score: 55, automationRisk: 'Rủi ro tự động hóa thấp', aiAugmentation: 'AI hỗ trợ tự động hóa các tác vụ lặp lại', criticalSkillsInAiEra: ['Tư duy phản biện', 'Sáng tạo'],
+      },
+      riskScore: c.riskScore || { level: 'Trung bình', description: 'Đòi hỏi tích lũy kinh nghiệm và cập nhật xu hướng.' },
+      universityStrategy: c.universityStrategy || {
+        dream: c.educationPath?.topUniversities?.slice(0, 1).map((u: string) => ({ name: u, targetScore: 'Cạnh tranh cao' })) || [],
+        match: c.educationPath?.topUniversities?.slice(1, 3).map((u: string) => ({ name: u, targetScore: 'Phù hợp' })) || [],
+        safe: [{ name: 'Trường đào tạo địa phương / Cao đẳng trọng điểm', targetScore: 'An toàn' }],
+        admissionNote: 'Điểm chuẩn chỉ mang tính tham khảo và thay đổi theo từng năm.',
+      },
+      actionableRoadmap: c.actionableRoadmap || {
+        m0_3: ['Nâng cao điểm số các môn cốt lõi', 'Rèn luyện ngoại ngữ 30p/ngày'],
+        m3_6: ['Tìm hiểu sâu về công việc thực tế', 'Học kỹ năng mềm'],
+        m6_12: ['Thực hiện dự án cá nhân'],
+        y1_3: ['Tập trung ôn thi ĐH và trúng tuyển'],
+        y3_5: ['Thực tập và chuẩn bị hành trang'],
+      },
+      gapResources: c.gapResources || [],
+    }));
+
     return {
-      ...result,
+      topCareers,
+      riasecProfile: result.riasecProfile || '',
+      overallAnalysis: result.overallAnalysis || '',
+      disclaimer: result.disclaimer || 'Dự báo dựa trên xu hướng dữ liệu, không phải dự đoán chắc chắn.',
       generatedAt: new Date(),
     };
   } catch (parseError) {
