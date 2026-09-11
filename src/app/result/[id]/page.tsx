@@ -30,6 +30,15 @@ const gradientColors = [
 ];
 const careerBgColors = ['#E8899D', '#7CB8CC', '#7CC9A8', '#E8B88A', '#B896D6'];
 
+const RIASEC_MAX_SCORES: Record<string, number> = {
+  R: 45,
+  I: 45,
+  A: 40,
+  S: 40,
+  E: 40,
+  C: 40,
+};
+
 export default function ResultPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [data, setData] = useState<AssessmentData | null>(null);
@@ -171,7 +180,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
   const radarData = riasecEntries.map(([key, value]) => ({
     subject: RIASEC_GROUP_INFO[key as keyof typeof RIASEC_GROUP_INFO].nameVi,
     value,
-    fullMark: 40
+    fullMark: RIASEC_MAX_SCORES[key] || 45
   }));
 
   const activeCareer: ICareerRecommendation = data.aiResult.topCareers[selectedCareerIndex] || data.aiResult.topCareers[0];
@@ -212,7 +221,8 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 20px', background: '#F1F5F9', borderRadius: 12, fontSize: 12 }}>
               <div><strong>Lớp:</strong> {data.className}</div>
               <div><strong>Mã RIASEC:</strong> <span style={{ color: '#0284C7', fontWeight: 800 }}>{topCode}</span></div>
-              <div><strong>Tài chính gia đình:</strong> {data.familyFinance}</div>
+              {data.mbtiResult && <div><strong>MBTI:</strong> <span style={{ color: '#7C3AED', fontWeight: 800 }}>{data.mbtiResult}</span></div>}
+              <div><strong>Tài chính:</strong> {data.familyFinance}</div>
               <div><strong>Ngày thực hiện:</strong> {new Date(data.createdAt).toLocaleDateString('vi-VN')}</div>
             </div>
           </div>
@@ -231,10 +241,10 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                 <div key={key} style={{ flex: '1 1 calc(33% - 8px)', background: '#F8FAFC', borderRadius: 8, padding: '8px 12px', border: '1px solid #E2E8F0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, marginBottom: 4 }}>
                     <span>{key} - {info.nameVi}</span>
-                    <span style={{ color: info.color }}>{value}/40</span>
+                    <span style={{ color: info.color }}>{value}/{RIASEC_MAX_SCORES[key] || 40}</span>
                   </div>
                   <div style={{ height: 6, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(value / 40) * 100}%`, background: info.color }} />
+                    <div style={{ height: '100%', width: `${Math.min(100, (value / (RIASEC_MAX_SCORES[key] || 40)) * 100)}%`, background: info.color }} />
                   </div>
                 </div>
               );
@@ -245,7 +255,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
         {/* PDF Careers Title */}
         <div data-pdf-section style={{ padding: '8px 40px', background: '#fff' }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', borderBottom: '2px solid #E2E8F0', paddingBottom: 6, margin: 0 }}>
-            🎯 TOP NGÀNH NGHỀ PHÙ HỢP (CFI & FEASIBILITY ANALYSIS)
+            🎯 TOP NGÀNH NGHỀ PHÙ HỢP (CFI & KHẢ NĂNG THỰC HIỆN)
           </h2>
         </div>
 
@@ -263,7 +273,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                       Fit (CFI): {cfi}%
                     </span>
                     <span style={{ background: '#ECFDF5', color: '#047857', padding: '2px 10px', borderRadius: 12, fontSize: 12, fontWeight: 800 }}>
-                      Khả thi: {feasibility}%
+                      Khả năng thực hiện: {feasibility}%
                     </span>
                   </div>
                 </div>
@@ -308,7 +318,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                           Sở thích: <strong>{career.scoreBreakdown.interests}/100</strong>
                         </div>
                         <div style={{ flex: '1 1 30%', background: '#fff', padding: '4px 8px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
-                          Thị trường: <strong>{career.scoreBreakdown.marketDemand}/100</strong>
+                          Mức độ phù hợp thị trường: <strong>{career.scoreBreakdown.marketDemand}/100</strong>
                         </div>
                       </div>
                     </div>
@@ -341,22 +351,22 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                   {/* University Strategy (Dream - Match - Safe) */}
                   {career.universityStrategy && (
                     <div style={{ marginBottom: 10, background: '#FAF5FF', padding: '10px 12px', borderRadius: 8, border: '1px solid #F3E8FF' }}>
-                      <div style={{ fontWeight: 700, color: '#6B21A8', marginBottom: 4 }}>🎓 Phương Án Chọn Trường Đại Học (Dream - Match - Safe):</div>
+                      <div style={{ fontWeight: 700, color: '#6B21A8', marginBottom: 4 }}>🎓 Phương Án Chọn Trường Đại Học:</div>
                       <div style={{ display: 'flex', gap: 8 }}>
                         <div style={{ flex: 1 }}>
-                          <strong style={{ color: '#DB2777' }}>🚀 Dream:</strong>
+                          <strong style={{ color: '#DB2777' }}>🚀 Trường mục tiêu:</strong>
                           {career.universityStrategy.dream?.map((u, uIdx) => (
                             <div key={uIdx}>• {u.name} ({u.targetScore})</div>
                           ))}
                         </div>
                         <div style={{ flex: 1 }}>
-                          <strong style={{ color: '#4F46E5' }}>🎯 Match:</strong>
+                          <strong style={{ color: '#4F46E5' }}>🎯 Trường phù hợp:</strong>
                           {career.universityStrategy.match?.map((u, uIdx) => (
                             <div key={uIdx}>• {u.name} ({u.targetScore})</div>
                           ))}
                         </div>
                         <div style={{ flex: 1 }}>
-                          <strong style={{ color: '#059669' }}>🛡️ Safe:</strong>
+                          <strong style={{ color: '#059669' }}>🛡️ Phương án dự phòng:</strong>
                           {career.universityStrategy.safe?.map((u, uIdx) => (
                             <div key={uIdx}>• {u.name} ({u.targetScore})</div>
                           ))}
@@ -425,7 +435,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
             Báo Cáo Định Hướng Hướng Nghiệp <span className="gradient-text">{data.fullName}</span>
           </h1>
           <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-            Hệ thống không chỉ phán xét "Bạn hợp nghề nào", mà phân tách chỉ số Phù hợp (CFI), Tính khả thi (Feasibility), Tác động AI và xây dựng Lộ trình làm chủ tương lai.
+            Hệ thống không chỉ phán xét "Bạn hợp nghề nào", mà phân tách chỉ số Phù hợp (CFI), Khả năng thực hiện, Tác động AI và xây dựng Lộ trình làm chủ tương lai.
           </p>
         </div>
 
@@ -447,7 +457,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                   <RadarChart data={radarData}>
                     <PolarGrid stroke="#E2E8F0" />
                     <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fontWeight: 600, fill: '#475569' }} />
-                    <PolarRadiusAxis angle={30} domain={[0, 40]} tick={{ fontSize: 8, fill: '#94A3B8' }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 45]} tick={{ fontSize: 8, fill: '#94A3B8' }} />
                     <Radar name="Điểm" dataKey="value" stroke="#6366F1" fill="#6366F1" fillOpacity={0.35} strokeWidth={2} />
                     <Tooltip />
                   </RadarChart>
@@ -457,7 +467,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
             <div className="mt-4 pt-3 border-t border-slate-100 flex justify-around text-center text-xs">
               {sortedRiasec.slice(0, 3).map(([key, val]) => (
                 <div key={key}>
-                  <div className="font-bold text-slate-900">{key} ({val}/40)</div>
+                  <div className="font-bold text-slate-900">{key} ({val}/{RIASEC_MAX_SCORES[key] || 40})</div>
                   <div className="text-[10px] text-slate-500">{RIASEC_GROUP_INFO[key as keyof typeof RIASEC_GROUP_INFO].nameVi}</div>
                 </div>
               ))}
@@ -486,9 +496,9 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                         <span className="font-bold text-slate-800 flex items-center gap-1">
                           <RIcon size={13} style={{ color: info.color }} /> {key}
                         </span>
-                        <span className="font-semibold text-slate-600">{value}/40</span>
+                        <span className="font-semibold text-slate-600">{value}/{RIASEC_MAX_SCORES[key] || 40}</span>
                       </div>
-                      <Progress percent={Math.round((value / 40) * 100)} showInfo={false} strokeColor={info.color} size="small" />
+                      <Progress percent={Math.min(100, Math.round((value / (RIASEC_MAX_SCORES[key] || 40)) * 100))} showInfo={false} strokeColor={info.color} size="small" />
                     </div>
                   );
                 })}
@@ -496,9 +506,9 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex flex-wrap gap-4 justify-between">
-              <span><strong>Học lực:</strong> Điểm TB ~ {((data.academicScores.reduce((acc, curr) => acc + curr.score, 0)) / (data.academicScores.length || 1)).toFixed(1)}/10</span>
-              <span><strong>Tài chính:</strong> {data.familyFinance}</span>
-              <span><strong>Định hướng:</strong> {data.favoriteSubjects.slice(0, 3).join(', ')}</span>
+              <span><strong>Học lực:</strong> Điểm TB ~ {(((data.academicScores || []).reduce((acc, curr) => acc + (curr.score || 0), 0)) / (data.academicScores?.length || 1)).toFixed(1)}/10</span>
+              <span><strong>Tài chính:</strong> {data.familyFinance || 'Tiêu chuẩn'}</span>
+              <span><strong>Định hướng:</strong> {(data.favoriteSubjects || []).slice(0, 3).join(', ') || 'Toàn diện'}</span>
             </div>
           </div>
         </div>
@@ -508,9 +518,9 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
               <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Target size={22} className="text-indigo-600" /> Bảng Chỉ Số Quyết Định Nghề Nghiệp (Decision Matrix)
+                <Target size={22} className="text-indigo-600" /> Bảng Chỉ số Phù hợp Nghề nghiệp
               </h2>
-              <p className="text-xs text-slate-500">Chọn từng ngành để xem chi tiết CFI, Feasibility, Xu hướng AI và Lộ trình phát triển</p>
+              <p className="text-xs text-slate-500">Chọn từng ngành để xem chi tiết CFI, Khả năng thực hiện, Xu hướng AI và Lộ trình phát triển</p>
             </div>
             <div className="text-xs text-slate-400 font-medium">
               Top 5 ngành được AI chọn lựa cho {data.fullName}
@@ -554,7 +564,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold mb-2">
-                  <Award size={14} /> Micro-Specialization: {activeCareer.name}
+                  <Award size={14} /> Định hướng chuyên môn: {activeCareer.name}
                 </div>
                 <h3 className="text-2xl font-extrabold text-slate-900 mb-1">{activeCareer.name}</h3>
                 <p className="text-xs md:text-sm text-slate-500 max-w-3xl leading-relaxed">{activeCareer.jobDescription}</p>
@@ -569,9 +579,9 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                 </div>
                 <div className="w-px h-10 bg-slate-200" />
                 <div className="text-center">
-                  <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Feasibility</div>
+                  <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Khả năng thực hiện</div>
                   <div className="text-2xl font-black text-emerald-600">{activeCareer.feasibility || 80}%</div>
-                  <div className="text-[9px] text-slate-400">Khả thi thực tế</div>
+                  <div className="text-[9px] text-slate-400">Khả năng thực hiện</div>
                 </div>
               </div>
             </div>
@@ -636,7 +646,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                       </div>
                       <div>
                         <div className="flex justify-between mb-1 font-semibold text-slate-700">
-                          <span>Nhu cầu thị trường</span>
+                          <span>Mức độ phù hợp thị trường</span>
                           <span>{activeCareer.scoreBreakdown.marketDemand}%</span>
                         </div>
                         <Progress percent={activeCareer.scoreBreakdown.marketDemand} showInfo={false} strokeColor="#F59E0B" size="small" />
@@ -734,13 +744,13 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                 {/* University Strategy Strategy (Dream - Match - Safe) */}
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <GraduationCap size={16} className="text-indigo-600" /> Trường ĐH Chọn Lựa (Dream - Match - Safe)
+                    <GraduationCap size={16} className="text-indigo-600" /> Trường ĐH Chọn Lựa
                   </h4>
 
                   {/* Dream */}
                   <div>
                     <div className="text-[11px] font-bold text-pink-600 flex items-center gap-1 mb-1">
-                      🚀 Trường Ước Mơ (Dream):
+                      🚀 Trường mục tiêu:
                     </div>
                     {activeCareer.universityStrategy?.dream?.map((u, idx) => (
                       <div key={idx} className="text-xs bg-white p-2 rounded-lg border border-slate-200 mb-1 flex justify-between">
@@ -753,7 +763,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                   {/* Match */}
                   <div>
                     <div className="text-[11px] font-bold text-indigo-600 flex items-center gap-1 mb-1">
-                      🎯 Trường Vừa Sức (Match):
+                      🎯 Trường phù hợp:
                     </div>
                     {activeCareer.universityStrategy?.match?.map((u, idx) => (
                       <div key={idx} className="text-xs bg-white p-2 rounded-lg border border-slate-200 mb-1 flex justify-between">
@@ -766,7 +776,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                   {/* Safe */}
                   <div>
                     <div className="text-[11px] font-bold text-emerald-600 flex items-center gap-1 mb-1">
-                      🛡️ Trường An Toàn (Safe):
+                      🛡️ Phương án dự phòng:
                     </div>
                     {activeCareer.universityStrategy?.safe?.map((u, idx) => (
                       <div key={idx} className="text-xs bg-white p-2 rounded-lg border border-slate-200 mb-1 flex justify-between">
@@ -846,7 +856,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                 <Sliders size={14} /> Giả Lập Phát Triển Năng Lực (What-If Simulator)
               </div>
               <h3 className="text-xl md:text-2xl font-bold">Nếu bạn nỗ lực cải thiện năng lực thì sao?</h3>
-              <p className="text-xs text-slate-400">Thử kéo các thanh năng lực bên dưới để mô phỏng sự thay đổi của chỉ số CFI và Tính khả thi!</p>
+              <p className="text-xs text-slate-400">Thử kéo các thanh năng lực bên dưới để mô phỏng sự thay đổi của chỉ số CFI và Khả năng thực hiện!</p>
             </div>
             <div className="bg-slate-800/80 px-4 py-2 rounded-xl text-right border border-slate-700">
               <span className="text-xs text-slate-400 block">Đang giả lập cho ngành:</span>
@@ -899,7 +909,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
               <div className="w-px h-12 bg-slate-700 hidden sm:block" />
 
               <div className="text-center">
-                <div className="text-xs text-slate-400 mb-1">Tính Khả Thi (Feasibility)</div>
+                <div className="text-xs text-slate-400 mb-1">Khả năng thực hiện</div>
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-xl font-bold text-slate-400">{currentFeasibility}%</span>
                   <ArrowRight size={18} className="text-emerald-400" />

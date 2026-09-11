@@ -19,9 +19,9 @@ import type { LucideIcon } from 'lucide-react';
 
 const steps: { title: string; desc: string; Icon: LucideIcon; color: string }[] = [
   { title: 'Thông tin', desc: 'Họ tên, lớp', Icon: UserRound, color: '#E8899D' },
-  { title: 'Học lực', desc: 'Điểm các môn', Icon: BookOpen, color: '#7CB8CC' },
-  { title: 'RIASEC', desc: '60 câu hỏi', Icon: Microscope, color: '#B896D6' },
-  { title: 'MBTI', desc: '70 câu hỏi', Icon: Brain, color: '#6366f1' },
+  { title: 'Học lực', desc: 'Mức học lực', Icon: BookOpen, color: '#7CB8CC' },
+  { title: 'RIASEC', desc: '50 câu hỏi', Icon: Microscope, color: '#B896D6' },
+  { title: 'MBTI', desc: '30 câu hỏi', Icon: Brain, color: '#6366f1' },
   { title: 'Sở thích', desc: 'Kỹ năng mềm', Icon: Heart, color: '#E8B88A' },
   { title: 'Giá trị', desc: 'Nghề nghiệp', Icon: Trophy, color: '#7CC9A8' },
 ];
@@ -137,15 +137,92 @@ function AssessmentForm() {
       <div className="relative z-10 pt-16 md:pt-24 pb-8 md:pb-12 px-3 md:px-4">
         <div className="max-w-4xl mx-auto">
 
-          {/* Resume banner */}
-          {state.isHydrated && cur > 0 && state.data.fullName && (
-            <div className="flex items-center justify-between bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-2.5 mb-3 animate-fade-in">
-              <span className="text-xs md:text-sm font-semibold text-text-main">
-                📝 Tiếp tục bài test của <span className="text-primary-dark">{state.data.fullName}</span>
-              </span>
-              <Button size="small" onClick={clearDraft} className="text-[10px] border-0">Làm lại từ đầu</Button>
+          {/* Resume banner & Dev Quick Test Buttons */}
+          <div className="flex items-center justify-between gap-2 mb-3">
+            {state.isHydrated && cur > 0 && state.data.fullName ? (
+              <div className="flex-1 flex items-center justify-between bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-2.5">
+                <span className="text-xs md:text-sm font-semibold text-text-main">
+                  📝 Tiếp tục bài test của <span className="text-primary-dark">{state.data.fullName}</span>
+                </span>
+                <Button size="small" onClick={clearDraft} className="text-[10px] border-0">Làm lại từ đầu</Button>
+              </div>
+            ) : <div />}
+
+            <div className="flex items-center gap-1.5">
+              {/* Fill Data Nhanh - Điểm Giỏi (8.5 - 9.5) */}
+              <Button
+                size="small"
+                type="dashed"
+                danger
+                className="text-[11px] font-bold rounded-xl flex items-center gap-1 bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100"
+                onClick={() => {
+                  dispatch({
+                    type: 'UPDATE_DATA',
+                    payload: {
+                      fullName: 'Phạm Đăng Khoa (Test Điểm Giỏi)',
+                      className: '12A1',
+                      familyFinance: 'Trung bình (20-40 triệu/năm)',
+                      academicScores: [
+                        { subject: 'Toán', subjectKey: 'math', score: 9.2 },
+                        { subject: 'Vật lý', subjectKey: 'physics', score: 8.8 },
+                        { subject: 'Hóa học', subjectKey: 'chemistry', score: 8.5 },
+                        { subject: 'Ngữ văn', subjectKey: 'literature', score: 8.0 },
+                        { subject: 'Tiếng Anh', subjectKey: 'english', score: 9.0 },
+                        { subject: 'Tin học', subjectKey: 'it', score: 9.5 },
+                        { subject: 'Sinh học', subjectKey: 'biology', score: 8.2 },
+                        { subject: 'Lịch sử', subjectKey: 'history', score: 7.5 },
+                        { subject: 'Địa lý', subjectKey: 'geography', score: 7.8 },
+                      ],
+                      riasecAnswers: new Array(60).fill(4),
+                      mbtiAnswers: new Array(70).fill('A'),
+                      interests: ['tech', 'design', 'science'],
+                      softSkills: { communication: 4, teamwork: 5, problemSolving: 5, leadership: 4, timeManagement: 4, creativity: 5, criticalThinking: 5, adaptability: 4 },
+                      careerValues: { income: 5, stability: 4, creativity: 5, socialImpact: 4, workLifeBalance: 4, advancement: 5 },
+                    },
+                  });
+                  api.success({ description: 'Đã điền tự động dữ liệu Test Điểm Giỏi (8.5-9.5)!', placement: 'topRight' });
+                }}
+              >
+                ⚡ Fill Điểm Giỏi (9.0)
+              </Button>
+
+              {/* Fill Data Nhanh - Điểm Khá (6.5 - 7.5) */}
+              <Button
+                size="small"
+                type="dashed"
+                className="text-[11px] font-bold rounded-xl flex items-center gap-1 bg-sky-50 border-sky-300 text-sky-800 hover:bg-sky-100"
+                onClick={() => {
+                  dispatch({
+                    type: 'UPDATE_DATA',
+                    payload: {
+                      fullName: 'Nguyễn Văn Nam (Test Điểm Khá)',
+                      className: '12A2',
+                      familyFinance: 'Khó khăn (< 20 triệu/năm)',
+                      academicScores: [
+                        { subject: 'Toán', subjectKey: 'math', score: 7.0 },
+                        { subject: 'Vật lý', subjectKey: 'physics', score: 6.8 },
+                        { subject: 'Hóa học', subjectKey: 'chemistry', score: 6.5 },
+                        { subject: 'Ngữ văn', subjectKey: 'literature', score: 7.2 },
+                        { subject: 'Tiếng Anh', subjectKey: 'english', score: 6.5 },
+                        { subject: 'Tin học', subjectKey: 'it', score: 7.5 },
+                        { subject: 'Sinh học', subjectKey: 'biology', score: 6.5 },
+                        { subject: 'Lịch sử', subjectKey: 'history', score: 7.0 },
+                        { subject: 'Địa lý', subjectKey: 'geography', score: 7.0 },
+                      ],
+                      riasecAnswers: new Array(60).fill(3),
+                      mbtiAnswers: new Array(70).fill('B'),
+                      interests: ['business', 'art', 'social'],
+                      softSkills: { communication: 3, teamwork: 4, problemSolving: 3, leadership: 3, timeManagement: 3, creativity: 4, criticalThinking: 3, adaptability: 4 },
+                      careerValues: { income: 4, stability: 5, creativity: 4, socialImpact: 5, workLifeBalance: 4, advancement: 4 },
+                    },
+                  });
+                  api.success({ description: 'Đã điền tự động dữ liệu Test Điểm Khá (6.5-7.5)!', placement: 'topRight' });
+                }}
+              >
+                ⚡ Fill Điểm Khá (7.0)
+              </Button>
             </div>
-          )}
+          </div>
 
           {/* ===== Custom Step Indicator ===== */}
           <div className="glass-card p-3 md:p-5 mb-4 md:mb-6">

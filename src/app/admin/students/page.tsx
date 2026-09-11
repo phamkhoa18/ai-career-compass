@@ -10,6 +10,17 @@ import { RIASEC_GROUP_INFO } from '@/data/riasec-questions';
 import { MAX_MBTI_SCORES } from '@/utils/mbti';
 import { interestOptions, softSkillsList, careerValuesList } from '@/data/subjects';
 
+// Helper: quy đổi score nội bộ → tên mức học lực
+function scoreToGrade(score: number): string {
+  if (score >= 9) return 'Xuất sắc';
+  if (score >= 7.5) return 'Giỏi';
+  if (score >= 6.5) return 'Khá';
+  if (score >= 5) return 'Trung bình';
+  if (score >= 3) return 'Yếu';
+  if (score > 0) return 'Kém';
+  return 'Chưa chọn';
+}
+
 const softSkillNames: Record<string, string> = {
   communication: 'Giao tiếp', teamwork: 'Làm việc nhóm', problemSolving: 'Giải quyết vấn đề',
   leadership: 'Lãnh đạo', timeManagement: 'Quản lý thời gian', creativity: 'Sáng tạo',
@@ -30,6 +41,7 @@ interface Student {
   createdAt: string;
   topCode: string;
   topCareer: string;
+  mbtiResult?: string;
   riasecScores?: Record<string, number>;
   academicScores?: { subject: string; subjectKey: string; score: number }[];
   topCareers?: { name: string; matchPercent: number; reason: string }[];
@@ -103,7 +115,7 @@ export default function StudentsPage() {
         'Họ và Tên': s.fullName,
         'Lớp': s.className,
         'Ngày làm bài': new Date(s.createdAt).toLocaleString('vi-VN'),
-        'Điểm Học Tập': s.academicScores?.map(a => `${a.subject}: ${a.score}`).join(', ') || 'Chưa có',
+        'Điểm Học Tập': s.academicScores?.map(a => `${a.subject}: ${scoreToGrade(a.score)}`).join(', ') || 'Chưa có',
         'Điểm R': s.riasecScores?.['R'] || 0,
         'Điểm I': s.riasecScores?.['I'] || 0,
         'Điểm A': s.riasecScores?.['A'] || 0,
@@ -111,6 +123,7 @@ export default function StudentsPage() {
         'Điểm E': s.riasecScores?.['E'] || 0,
         'Điểm C': s.riasecScores?.['C'] || 0,
         'Mã RIASEC': s.topCode,
+        'MBTI': s.mbtiResult || 'Chưa có',
       };
 
       // Thêm 5 Ngành
@@ -132,6 +145,7 @@ export default function StudentsPage() {
       { wch: 40 },  // Điểm Học Tập
       { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, // R I A S E C
       { wch: 15 },  // Mã RIASEC
+      { wch: 10 },  // MBTI
       { wch: 45 }, { wch: 45 }, { wch: 45 }, { wch: 45 }, { wch: 45 } // Top 1 -> 5
     ];
 
@@ -171,7 +185,7 @@ export default function StudentsPage() {
       doc.setFontSize(14);
       doc.text("DANH SÁCH HỌC SINH HƯỚNG NGHIỆP", 14, 20);
       
-      const tableColumn = ["STT", "HỌ VÀ TÊN", "LỚP", "NGÀY LÀM BÀI", "RIASEC", "NGÀNH PHÙ HỢP NHẤT"];
+      const tableColumn = ["STT", "HỌ VÀ TÊN", "LỚP", "NGÀY LÀM BÀI", "RIASEC", "MBTI", "NGÀNH PHÙ HỢP NHẤT"];
       const tableRows = students.map((s, i) => {
         const topCareersText = s.topCareers?.slice(0,3).map(c => `${c.name} (${c.matchPercent}%)`).join('\n') || '';
         return [
@@ -180,6 +194,7 @@ export default function StudentsPage() {
           s.className,
           new Date(s.createdAt).toLocaleDateString('vi-VN'),
           s.topCode,
+          s.mbtiResult || 'N/A',
           topCareersText
         ];
       });
@@ -206,7 +221,8 @@ export default function StudentsPage() {
   const filteredStudents = students.filter(s => 
     s.fullName.toLowerCase().includes(searchText.toLowerCase()) ||
     s.className.toLowerCase().includes(searchText.toLowerCase()) ||
-    s.topCode.toLowerCase().includes(searchText.toLowerCase())
+    s.topCode.toLowerCase().includes(searchText.toLowerCase()) ||
+    (s.mbtiResult && s.mbtiResult.toLowerCase().includes(searchText.toLowerCase()))
   );
 
   const columns = [
@@ -232,10 +248,16 @@ export default function StudentsPage() {
       sorter: (a: Student, b: Student) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },
     {
-      title: 'Mã RIASEC',
-      dataIndex: 'topCode',
-      key: 'topCode',
-      render: (code: string) => <Tag color="geekblue" style={{ fontWeight: 'bold', letterSpacing: 1 }}>{code}</Tag>,
+      title: 'RIASEC / MBTI',
+      key: 'personality',
+      render: (_: any, record: Student) => (
+        <Space size={4}>
+          <Tag color="geekblue" style={{ fontWeight: 'bold', letterSpacing: 1 }}>{record.topCode}</Tag>
+          {record.mbtiResult && record.mbtiResult !== 'N/A' && (
+            <Tag color="purple" style={{ fontWeight: 'bold' }}>{record.mbtiResult}</Tag>
+          )}
+        </Space>
+      ),
     },
     {
       title: 'Ngành phù hợp nhất',
@@ -414,18 +436,18 @@ export default function StudentsPage() {
               {studentDetails.academicScores?.map((subject: any) => (
                 <Tag 
                   key={subject.subjectKey} 
-                  color={subject.score >= 8 ? 'success' : subject.score >= 6.5 ? 'processing' : 'error'}
+                  color={subject.score >= 8 ? 'success' : subject.score >= 6.5 ? 'processing' : subject.score >= 5 ? 'warning' : 'error'}
                   style={{ fontSize: 14, padding: '4px 12px', borderRadius: 16 }}
-                  icon={subject.score >= 8 ? <CheckCircleFilled /> : (subject.score < 6.5 ? <CloseCircleFilled /> : undefined)}
+                  icon={subject.score >= 8 ? <CheckCircleFilled /> : (subject.score < 5 ? <CloseCircleFilled /> : undefined)}
                 >
-                  {subject.subject}: {subject.score}
+                  {subject.subject}: {scoreToGrade(subject.score)}
                 </Tag>
               ))}
               <Tag 
                 color="purple"
                 style={{ fontSize: 14, padding: '4px 12px', borderRadius: 16 }}
               >
-                MBTI: {studentDetails.mbtiResult ? studentDetails.mbtiResult : `${studentDetails.mbtiAnswers?.filter((a: string) => a).length || 0}/70 câu`}
+                MBTI: {studentDetails.mbtiResult ? studentDetails.mbtiResult : `${studentDetails.mbtiAnswers?.filter((a: string) => a).length || 0}/30 câu`}
               </Tag>
             </div>
 
@@ -484,7 +506,7 @@ export default function StudentsPage() {
                       <Text strong style={{ fontSize: 16, color: '#0f172a' }}>#{index + 1} {career.name}</Text>
                       <Space>
                         <Tag color="blue" style={{ borderRadius: 12, margin: 0, fontWeight: 'bold' }}>CFI: {career.cfi || career.matchPercent || 85}%</Tag>
-                        <Tag color="green" style={{ borderRadius: 12, margin: 0, fontWeight: 'bold' }}>Khả thi: {career.feasibility || 80}%</Tag>
+                        <Tag color="green" style={{ borderRadius: 12, margin: 0, fontWeight: 'bold' }}>Khả năng thực hiện: {career.feasibility || 80}%</Tag>
                       </Space>
                     </div>
 
@@ -516,9 +538,9 @@ export default function StudentsPage() {
                     {career.universityStrategy && (
                       <div style={{ marginBottom: 10, fontSize: 12 }}>
                         <Text strong style={{ color: '#475569', display: 'block', marginBottom: 2 }}>Phương án chọn trường:</Text>
-                        <div style={{ color: '#be185d' }}>• Dream: {career.universityStrategy.dream?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
-                        <div style={{ color: '#4338ca' }}>• Match: {career.universityStrategy.match?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
-                        <div style={{ color: '#047857' }}>• Safe: {career.universityStrategy.safe?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
+                        <div style={{ color: '#be185d' }}>• Trường mục tiêu: {career.universityStrategy.dream?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
+                        <div style={{ color: '#4338ca' }}>• Trường phù hợp: {career.universityStrategy.match?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
+                        <div style={{ color: '#047857' }}>• Phương án dự phòng: {career.universityStrategy.safe?.map((u: any) => u.name).join(', ') || 'N/A'}</div>
                       </div>
                     )}
 

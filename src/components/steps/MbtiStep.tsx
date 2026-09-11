@@ -36,20 +36,20 @@ export default function MbtiStep() {
         </div>
         <h2 className="text-lg md:text-2xl font-bold text-text-main mb-2">Trắc nghiệm MBTI</h2>
         <p className="text-sm text-text-secondary max-w-lg mx-auto">
-          70 câu hỏi giúp AI phân tích sâu hơn về nhóm tính cách của bạn. Hãy chọn đáp án phù hợp nhất với bản thân một cách tự nhiên.
+          {mbtiQuestions.length} câu hỏi giúp AI phân tích sâu hơn về nhóm tính cách của bạn. Hãy chọn đáp án phù hợp nhất với bản thân một cách tự nhiên.
         </p>
       </div>
 
       {/* Progress Sticky Bar */}
       <div className="sticky top-20 z-40 bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-gray-100 mb-6 flex items-center justify-between transition-all">
         <div className="text-sm font-bold text-text-main">
-          Tiến độ: <span className="text-indigo-600">{answeredCount}/70</span>
+          Tiến độ: <span className="text-indigo-600">{answeredCount}/{mbtiQuestions.length}</span>
         </div>
         <div className="flex-1 mx-4">
           <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
             <div 
               className="h-full bg-indigo-500 transition-all duration-300"
-              style={{ width: `${(answeredCount / 70) * 100}%` }}
+              style={{ width: `${(answeredCount / mbtiQuestions.length) * 100}%` }}
             />
           </div>
         </div>

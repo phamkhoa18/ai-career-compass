@@ -8,7 +8,7 @@ import Navbar from '@/components/ui/Navbar';
 import {
   ArrowRight, ClipboardList, Star, GraduationCap,
   Microscope, Sparkles, Target, BookOpen, Lightbulb, Diamond,
-  BarChart3,
+  BarChart3, Brain,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -105,7 +105,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 stagger-children">
             {[
-              { Icon: Microscope, title: 'Trắc nghiệm RIASEC', desc: '42 câu hỏi khoa học giúp xác định nhóm tính cách nghề nghiệp của bạn.', gradient: 'bg-gradient-primary' },
+              { Icon: Microscope, title: 'Trắc nghiệm RIASEC', desc: '50 câu hỏi khoa học giúp xác định nhóm tính cách nghề nghiệp của bạn.', gradient: 'bg-gradient-primary' },
               { Icon: Sparkles, title: 'Phân tích AI', desc: 'AI phân tích toàn diện: học lực, sở thích, kỹ năng mềm, giá trị nghề nghiệp.', gradient: 'bg-gradient-cool' },
               { Icon: Target, title: 'Top 5 Ngành Nghề', desc: 'Gợi ý 5 ngành nghề phù hợp nhất kèm lý do chi tiết và điểm cần cải thiện.', gradient: 'bg-gradient-purple' },
             ].map((card, i) => (
@@ -126,11 +126,12 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto">
           <div className="glass-card p-6 md:p-8">
             <h2 className="text-xl md:text-2xl font-bold text-center text-text-main mb-6 md:mb-8">Các Bước Đánh Giá</h2>
-            <div className="grid grid-cols-5 gap-2 md:gap-4">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-4">
               {[
                 { Icon: ClipboardList, title: 'Thông tin', desc: 'Họ tên, lớp' },
-                { Icon: BarChart3, title: 'Học lực', desc: 'Điểm các môn' },
-                { Icon: Microscope, title: 'RIASEC', desc: '42 câu hỏi' },
+                { Icon: BarChart3, title: 'Học lực', desc: 'Mức học lực' },
+                { Icon: Microscope, title: 'RIASEC', desc: '50 câu hỏi' },
+                { Icon: Brain, title: 'MBTI', desc: '30 câu hỏi' },
                 { Icon: Lightbulb, title: 'Sở thích', desc: 'Kỹ năng mềm' },
                 { Icon: Diamond, title: 'Giá trị', desc: 'Nghề nghiệp' },
               ].map((step, index) => (

@@ -110,7 +110,8 @@ export async function GET() {
       createdAt: 1,
       'aiResult.topCareers': 1,
       riasecScores: 1,
-      academicScores: 1
+      academicScores: 1,
+      mbtiResult: 1,
     }).sort({ createdAt: -1 }).limit(500);
 
     const formattedStudents = recentStudents.map(student => {
@@ -126,6 +127,7 @@ export async function GET() {
         createdAt: student.createdAt,
         topCode,
         topCareer: student.aiResult?.topCareers?.[0]?.name || 'Đang xử lý',
+        mbtiResult: student.mbtiResult || 'N/A',
         // Additional fields for Excel Export
         riasecScores: student.riasecScores,
         academicScores: student.academicScores,

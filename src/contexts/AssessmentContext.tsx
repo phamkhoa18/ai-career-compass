@@ -60,9 +60,9 @@ const initialData: AssessmentData = {
   aptitudeSubjects: [],
   favoriteSubjects: [],
   familyFinance: 'Trung bình',
-  riasecAnswers: new Array(60).fill(-1),
+  riasecAnswers: new Array(50).fill(-1),
   riasecScores: { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 },
-  mbtiAnswers: new Array(70).fill(''),
+  mbtiAnswers: new Array(30).fill(''),
   interests: [],
   softSkills: {
     communication: 3,

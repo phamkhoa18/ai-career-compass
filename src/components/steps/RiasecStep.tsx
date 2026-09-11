@@ -77,7 +77,7 @@ export default function RiasecStep() {
     <div className="animate-fade-in-up -mx-1 md:mx-0">
       <div className="text-center mb-4 md:mb-6">
         <h2 className="text-lg md:text-2xl font-bold text-text-main mb-2">Trắc nghiệm RIASEC</h2>
-        <p className="text-sm text-text-secondary">Đã trả lời: {totalAnswered}/60 câu</p>
+        <p className="text-sm text-text-secondary">Đã trả lời: {totalAnswered}/{riasecQuestions.length} câu</p>
       </div>
 
       <div className="max-w-3xl mx-auto">

@@ -1,76 +1,44 @@
-// Bản đồ chuẩn xác chấm điểm cho 70 câu hỏi MBTI (phiên bản Việt hóa)
-// Cột A và B ánh xạ tương ứng vào các đặc điểm E/I, S/N, T/F, J/P
+// Bản đồ chấm điểm cho 30 câu hỏi MBTI mới (phiên bản Việt hóa)
+// Câu 1-7: E/I, Câu 8-14: S/N, Câu 15-21: T/F, Câu 22-30: J/P
+// Cột A luôn = chiều thuận (E, S, T, J), Cột B = chiều ngược (I, N, F, P)
 const MBTI_KEY: { a: string; b: string }[] = [
-  { a: 'E', b: 'I' }, // 1. Bữa tiệc
-  { a: 'S', b: 'N' }, // 2. Thực tế / Sáng tạo
-  { a: 'S', b: 'N' }, // 3. Tồi tệ hơn: bay bổng (S) / nhàm chán (N)
-  { a: 'T', b: 'F' }, // 4. Nguyên tắc / Cảm xúc
-  { a: 'T', b: 'F' }, // 5. Thuyết phục / Đồng cảm
-  { a: 'J', b: 'P' }, // 6. Thời hạn / Tùy hứng
-  { a: 'J', b: 'P' }, // 7. Cẩn thận / Cảm nhận
-  { a: 'E', b: 'I' }, // 8. Tới cùng / Về sớm
-  { a: 'S', b: 'N' }, // 9. Thực tế / Tưởng tượng
-  { a: 'S', b: 'N' }, // 10. Điều thực tế / Ý tưởng
-  { a: 'T', b: 'F' }, // 11. Luật lệ / Hoàn cảnh
-  { a: 'T', b: 'F' }, // 12. Khách quan / Cá nhân
-  { a: 'J', b: 'P' }, // 13. Đúng giờ / Nhàn nhã
-  { a: 'J', b: 'P' }, // 14. Chưa hoàn thiện / Quá hoàn thiện
-  { a: 'E', b: 'I' }, // 15. Nắm thông tin nhanh / sau
-  { a: 'S', b: 'N' }, // 16. Thông thường / Cách riêng
-  { a: 'S', b: 'N' }, // 17. Chân thật / Liên tưởng
-  { a: 'T', b: 'F' }, // 18. Nhất quán / Hòa hợp
-  { a: 'T', b: 'F' }, // 19. Logic / Ý nghĩa
-  { a: 'J', b: 'P' }, // 20. Sắp xếp / Chưa xác định
-  { a: 'J', b: 'P' }, // 21. Nghiêm túc / Dễ gần
-  { a: 'E', b: 'I' }, // 22. Gọi bình thường / Chuẩn bị
-  { a: 'S', b: 'N' }, // 23. Tự giải thích / Bằng chứng
-  { a: 'S', b: 'N' }, // 24. Gây khó chịu / Thú vị
-  { a: 'T', b: 'F' }, // 25. Đầu lạnh / Tim nóng
-  { a: 'T', b: 'F' }, // 26. Không công bằng / Tàn nhẫn
-  { a: 'J', b: 'P' }, // 27. Cân nhắc / Ngẫu nhiên
-  { a: 'J', b: 'P' }, // 28. Đã mua / Đang lựa chọn
-  { a: 'E', b: 'I' }, // 29. Khởi xướng / Đợi
-  { a: 'S', b: 'N' }, // 30. Ít nghi ngờ / Xem xét
-  { a: 'S', b: 'N' }, // 31. Chưa cố gắng / Chưa vui chơi
-  { a: 'T', b: 'F' }, // 32. Tiêu chuẩn / Cảm xúc
-  { a: 'T', b: 'F' }, // 33. Cứng rắn / Nhẹ nhàng
-  { a: 'J', b: 'P' }, // 34. Phương pháp / Xoay xở
-  { a: 'J', b: 'P' }, // 35. Chắc chắn / Cởi mở
-  { a: 'E', b: 'I' }, // 36. Hào hứng / Mệt mỏi
-  { a: 'S', b: 'N' }, // 37. Thực tế / Tưởng tượng
-  { a: 'T', b: 'F' }, // 38. Việc hữu ích / Nghĩ cảm nhận
-  { a: 'T', b: 'F' }, // 39. Thảo luận / Thỏa thuận
-  { a: 'T', b: 'F' }, // 40. Đầu / Trái tim
-  { a: 'P', b: 'J' }, // 41. Trọn gói (P) / Hàng ngày (J) - Flipped!
-  { a: 'J', b: 'P' }, // 42. Trật tự / Ngẫu nhiên
-  { a: 'E', b: 'I' }, // 43. Nhiều bạn / Ít bạn
-  { a: 'S', b: 'N' }, // 44. Sự kiện / Nguyên lý
-  { a: 'S', b: 'N' }, // 45. Sản xuất / Thiết kế
-  { a: 'T', b: 'F' }, // 46. Logic / Tinh tế
-  { a: 'T', b: 'F' }, // 47. Kiên định / Cống hiến
-  { a: 'J', b: 'P' }, // 48. Cuối cùng / Dự kiến
-  { a: 'P', b: 'J' }, // 49. TRƯỚC quyết định (P) / SAU quyết định (J) - Flipped!
-  { a: 'E', b: 'I' }, // 50. Dễ bắt chuyện / Khó
-  { a: 'S', b: 'N' }, // 51. Kinh nghiệm / Linh cảm
-  { a: 'S', b: 'N' }, // 52. Thực tế / Khôn khéo
-  { a: 'T', b: 'F' }, // 53. Lý trí / Cảm xúc
-  { a: 'T', b: 'F' }, // 54. Công bằng / Thông cảm
-  { a: 'J', b: 'P' }, // 55. Chuẩn bị / Tự nhiên
-  { a: 'J', b: 'P' }, // 56. Thảo luận / Ngẫu nhiên
-  { a: 'E', b: 'I' }, // 57. Nhấc máy / Đợi
-  { a: 'S', b: 'N' }, // 58. Nhận thức / Tưởng tượng
-  { a: 'S', b: 'N' }, // 59. Nguyên lý / Ẩn ý
-  { a: 'T', b: 'F' }, // 60. Quá nồng nhiệt / Quá khách quan
-  { a: 'T', b: 'F' }, // 61. Thiết thực / Đa cảm
-  { a: 'J', b: 'P' }, // 62. Kế hoạch / Không xác định
-  { a: 'J', b: 'P' }, // 63. Thói quen / Thay đổi
-  { a: 'E', b: 'I' }, // 64. Dễ tiếp cận / Kín đáo
-  { a: 'N', b: 'S' }, // 65. Văn chương (N) / Số liệu (S) - Flipped!
-  { a: 'T', b: 'F' }, // 66. Khó hiểu chia sẻ / Khó điều khiển
-  { a: 'T', b: 'F' }, // 67. Lý trí / Trắc ẩn
-  { a: 'J', b: 'P' }, // 68. Lỗi bừa bãi / Lỗi phê phán
-  { a: 'J', b: 'P' }, // 69. Có kế hoạch / Không kế hoạch
-  { a: 'J', b: 'P' }, // 70. Cân nhắc / Tự phát
+  // ===== E/I: Câu 1-7 =====
+  { a: 'E', b: 'I' }, // 1. Giao tiếp nhiều / Ít người quen
+  { a: 'E', b: 'I' }, // 2. Ra ngoài / Ở một mình
+  { a: 'E', b: 'I' }, // 3. Chủ động bắt chuyện / Đợi người khác
+  { a: 'E', b: 'I' }, // 4. Nắm bắt nhanh / Biết sau
+  { a: 'E', b: 'I' }, // 5. Sẵn sàng nghe / Ngập ngừng
+  { a: 'E', b: 'I' }, // 6. Phấn chấn / Mệt mỏi
+  { a: 'E', b: 'I' }, // 7. Cởi mở / Kín đáo
+
+  // ===== S/N: Câu 8-14 =====
+  { a: 'S', b: 'N' }, // 8. Thực tế / Sáng tạo
+  { a: 'S', b: 'N' }, // 9. Chi tiết / Bức tranh toàn cảnh
+  { a: 'S', b: 'N' }, // 10. Đời thực / Viễn tưởng
+  { a: 'S', b: 'N' }, // 11. Kinh nghiệm / Trực giác
+  { a: 'S', b: 'N' }, // 12. Bay bổng (S) / Nhàm chán (N)
+  { a: 'S', b: 'N' }, // 13. Quy trình / Cách mới
+  { a: 'S', b: 'N' }, // 14. Mục tiêu trước mắt / Lo xa
+
+  // ===== T/F: Câu 15-21 =====
+  { a: 'T', b: 'F' }, // 15. Logic / Cảm xúc
+  { a: 'T', b: 'F' }, // 16. Nguyên tắc / Hoàn cảnh
+  { a: 'T', b: 'F' }, // 17. Nhất quán tư duy / Hòa hợp cảm xúc
+  { a: 'T', b: 'F' }, // 18. Sắc bén logic / Tinh tế ấm áp
+  { a: 'T', b: 'F' }, // 19. Giải pháp / Lắng nghe
+  { a: 'F', b: 'T' }, // 20. Tàn nhẫn (F) / Bất công (T) — Flipped!
+  { a: 'T', b: 'F' }, // 21. Cứng rắn / Nhẹ nhàng
+
+  // ===== J/P: Câu 22-30 =====
+  { a: 'J', b: 'P' }, // 22. Kế hoạch / Tùy hứng
+  { a: 'J', b: 'P' }, // 23. Sắp xếp xong / Để ngỏ
+  { a: 'J', b: 'P' }, // 24. Ngăn nắp / Bừa bộn
+  { a: 'J', b: 'P' }, // 25. Lịch trình chi tiết / Ý chính
+  { a: 'J', b: 'P' }, // 26. Làm sớm / Sát giờ
+  { a: 'J', b: 'P' }, // 27. Khó chịu khi thay đổi / Linh hoạt
+  { a: 'J', b: 'P' }, // 28. To-do list / Tùy tâm trạng
+  { a: 'J', b: 'P' }, // 29. Chắc chắn / Dự kiến
+  { a: 'J', b: 'P' }, // 30. Trật tự / Tự nhiên
 ];
 
 export interface MbtiCalculationResult {
