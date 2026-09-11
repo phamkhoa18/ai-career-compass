@@ -31,12 +31,12 @@ const gradientColors = [
 const careerBgColors = ['#E8899D', '#7CB8CC', '#7CC9A8', '#E8B88A', '#B896D6'];
 
 const RIASEC_MAX_SCORES: Record<string, number> = {
-  R: 45,
-  I: 45,
-  A: 40,
-  S: 40,
-  E: 40,
-  C: 40,
+  R: 36,  // 9 questions × max 4
+  I: 36,  // 9 questions × max 4
+  A: 32,  // 8 questions × max 4
+  S: 32,  // 8 questions × max 4
+  E: 32,  // 8 questions × max 4
+  C: 32,  // 8 questions × max 4
 };
 
 export default function ResultPage({ params }: { params: Promise<{ id: string }> }) {
@@ -457,7 +457,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                   <RadarChart data={radarData}>
                     <PolarGrid stroke="#E2E8F0" />
                     <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fontWeight: 600, fill: '#475569' }} />
-                    <PolarRadiusAxis angle={30} domain={[0, 45]} tick={{ fontSize: 8, fill: '#94A3B8' }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 36]} tick={{ fontSize: 8, fill: '#94A3B8' }} />
                     <Radar name="Điểm" dataKey="value" stroke="#6366F1" fill="#6366F1" fillOpacity={0.35} strokeWidth={2} />
                     <Tooltip />
                   </RadarChart>

@@ -78,13 +78,64 @@ export async function analyzeCareer(data: AnalysisInput) {
     socialImpact: 'Đóng góp xã hội', workLifeBalance: 'Cân bằng cuộc sống', advancement: 'Cơ hội thăng tiến',
   };
 
+  // Convert internal score values to grade labels for AI
+  const scoreToGrade = (score: number): string => {
+    if (score >= 9) return 'Xuất sắc';
+    if (score >= 7.5) return 'Giỏi';
+    if (score >= 6.5) return 'Khá';
+    if (score >= 5) return 'Trung bình';
+    if (score >= 3) return 'Yếu';
+    if (score > 0) return 'Kém';
+    return 'Chưa chọn';
+  };
+
+  // Format soft skills for prompt
+  const softSkillsStr = Object.entries(data.softSkills)
+    .map(([key, val]) => `${softSkillNames[key] || key}: ${val}/5`)
+    .join(', ');
+
+  // Format career values for prompt
+  const careerValuesStr = Object.entries(data.careerValues)
+    .map(([key, val]) => `${careerValueNames[key] || key}: ${val}/5`)
+    .join(', ');
+
+  // Format interests
+  const interestNames: Record<string, string> = {
+    computer: 'Công nghệ', space: 'Vũ trụ', language: 'Ngôn ngữ', art: 'Nghệ thuật',
+    business: 'Kinh doanh', health: 'Y tế', education: 'Giáo dục', sport: 'Thể thao',
+    music: 'Âm nhạc', travel: 'Du lịch', cooking: 'Ẩm thực', environment: 'Môi trường',
+    media: 'Truyền thông', law: 'Pháp luật', psychology: 'Tâm lý', architecture: 'Kiến trúc',
+    gaming: 'Game', science: 'Khoa học', military: 'Quân sự', social: 'Xã hội',
+  };
+  const interestsStr = data.interests.map(k => interestNames[k] || k).join(', ') || 'Chưa chọn';
+
+  // Format aptitude subjects
+  const aptitudeStr = data.aptitudeSubjects.length > 0
+    ? data.aptitudeSubjects.map(s => `${s.subject}: ${s.isLiked ? 'Thích' : 'Không thích'}`).join(', ')
+    : 'Chưa đánh giá';
+
+  // Format favorite subjects
+  const favoriteStr = data.favoriteSubjects.length > 0
+    ? data.favoriteSubjects.join(', ')
+    : 'Chưa chọn';
+
+  // Format RIASEC detailed scores
+  const riasecDetailStr = sortedRiasec.map(([k, v]) => `${k}:${v}`).join(', ');
+
   const prompt = `Bạn là hệ thống AI tư vấn hướng nghiệp (Decision Support System) cho học sinh THPT Việt Nam.
 Nhiệm vụ: Phân tích và gợi ý ĐÚNG 5 NGHỀ NGHIỆP PHÙ HỢP NHẤT dưới dạng JSON.
 
 HỌC SINH:
 - Họ tên: ${data.fullName} | Lớp: ${data.className} | Tài chính: ${data.familyFinance}
-- Học lực (TB ${avgScore.toFixed(1)}): ${data.academicScores.map(s => `${s.subject}:${s.score}`).join(', ')}
-- Mã RIASEC: ${topCode} | MBTI: ${mbtiCode}
+- Học lực: ${data.academicScores.map(s => `${s.subject}: ${scoreToGrade(s.score)}`).join(', ')}
+- Môn yêu thích: ${favoriteStr}
+- Năng khiếu/Thể chất: ${aptitudeStr}
+- Mã RIASEC: ${topCode} (Chi tiết: ${riasecDetailStr}) | MBTI: ${mbtiCode}
+- Kỹ năng mềm: ${softSkillsStr}
+- Sở thích: ${interestsStr}
+- Giá trị nghề nghiệp: ${careerValuesStr}
+- Trường phù hợp tài chính & học lực:
+${universitiesContext}
 
 LƯU Ý QUAN TRỌNG:
 1. Trả về mảng "topCareers" BẮT BUỘC ĐÚNG 5 phần tử.

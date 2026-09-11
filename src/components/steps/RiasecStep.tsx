@@ -34,11 +34,12 @@ export default function RiasecStep() {
     const newAns = [...state.data.riasecAnswers];
     newAns[questionIndex] = value;
     
-    // Recalculate scores
+    // Recalculate scores — use rq.id - 1 to match the index used when writing answers
     const scores = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-    riasecQuestions.forEach((rq, idx) => {
-      if (newAns[idx] !== -1) {
-        scores[rq.group] += newAns[idx];
+    riasecQuestions.forEach((rq) => {
+      const ansIdx = rq.id - 1;
+      if (newAns[ansIdx] !== undefined && newAns[ansIdx] !== -1) {
+        scores[rq.group] += newAns[ansIdx];
       }
     });
     
@@ -47,16 +48,17 @@ export default function RiasecStep() {
 
   const setAllInGroup = (value: number) => {
     const newAns = [...state.data.riasecAnswers];
-    riasecQuestions.forEach((q, idx) => {
+    riasecQuestions.forEach((q) => {
       if (q.group === activeGroup) {
-        newAns[idx] = value;
+        newAns[q.id - 1] = value;
       }
     });
     
     const scores = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-    riasecQuestions.forEach((rq, idx) => {
-      if (newAns[idx] !== -1) {
-        scores[rq.group] += newAns[idx];
+    riasecQuestions.forEach((rq) => {
+      const ansIdx = rq.id - 1;
+      if (newAns[ansIdx] !== undefined && newAns[ansIdx] !== -1) {
+        scores[rq.group] += newAns[ansIdx];
       }
     });
     
