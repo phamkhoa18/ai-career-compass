@@ -44,11 +44,11 @@ function AssessmentForm() {
         return true;
       case 2:
         const ansRiasec = data.riasecAnswers.filter((a) => a !== -1).length;
-        if (ansRiasec < 60) { api.warning({ description: `Bạn còn ${60 - ansRiasec} câu RIASEC chưa trả lời!`, placement: 'topRight' }); return false; }
+        if (ansRiasec < 50) { api.warning({ description: `Bạn còn ${50 - ansRiasec} câu RIASEC chưa trả lời!`, placement: 'topRight' }); return false; }
         return true;
       case 3:
         const ansMbti = data.mbtiAnswers.filter((a) => a !== '').length;
-        if (ansMbti < 70) { api.warning({ description: `Bạn còn ${70 - ansMbti} câu MBTI chưa trả lời!`, placement: 'topRight' }); return false; }
+        if (ansMbti < 30) { api.warning({ description: `Bạn còn ${30 - ansMbti} câu MBTI chưa trả lời!`, placement: 'topRight' }); return false; }
         return true;
       case 4:
         if (data.interests.length === 0) { api.warning({ description: 'Vui lòng chọn ít nhất 1 sở thích!', placement: 'topRight' }); return false; }
@@ -173,8 +173,8 @@ function AssessmentForm() {
                         { subject: 'Lịch sử', subjectKey: 'history', score: 7.5 },
                         { subject: 'Địa lý', subjectKey: 'geography', score: 7.8 },
                       ],
-                      riasecAnswers: new Array(60).fill(4),
-                      mbtiAnswers: new Array(70).fill('A'),
+                      riasecAnswers: new Array(50).fill(4),
+                      mbtiAnswers: new Array(30).fill('A'),
                       interests: ['tech', 'design', 'science'],
                       softSkills: { communication: 4, teamwork: 5, problemSolving: 5, leadership: 4, timeManagement: 4, creativity: 5, criticalThinking: 5, adaptability: 4 },
                       careerValues: { income: 5, stability: 4, creativity: 5, socialImpact: 4, workLifeBalance: 4, advancement: 5 },
@@ -209,8 +209,8 @@ function AssessmentForm() {
                         { subject: 'Lịch sử', subjectKey: 'history', score: 7.0 },
                         { subject: 'Địa lý', subjectKey: 'geography', score: 7.0 },
                       ],
-                      riasecAnswers: new Array(60).fill(3),
-                      mbtiAnswers: new Array(70).fill('B'),
+                      riasecAnswers: new Array(50).fill(3),
+                      mbtiAnswers: new Array(30).fill('B'),
                       interests: ['business', 'art', 'social'],
                       softSkills: { communication: 3, teamwork: 4, problemSolving: 3, leadership: 3, timeManagement: 3, creativity: 4, criticalThinking: 3, adaptability: 4 },
                       careerValues: { income: 4, stability: 5, creativity: 4, socialImpact: 5, workLifeBalance: 4, advancement: 4 },
