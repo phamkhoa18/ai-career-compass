@@ -136,14 +136,6 @@ export default function RiasecStep() {
               <h3 className="text-lg md:text-xl font-bold text-text-main">Nhóm {info.nameVi} ({info.name})</h3>
               <p className="text-xs md:text-sm text-text-light">{info.description}</p>
             </div>
-          </div>
-          
-          <button 
-            onClick={() => setAllInGroup(0)}
-            className="text-xs font-semibold px-3 py-2 bg-gray-100 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors border border-gray-200 whitespace-nowrap"
-          >
-            Chọn "Không phù hợp" tất cả
-          </button>
         </div>
 
         {/* Questions List */}

@@ -80,11 +80,11 @@ export async function analyzeCareer(data: AnalysisInput) {
 
   // Convert internal score values to grade labels for AI
   const scoreToGrade = (score: number): string => {
-    if (score >= 9) return 'Xuất sắc';
-    if (score >= 7.5) return 'Giỏi';
-    if (score >= 6.5) return 'Khá';
-    if (score >= 5) return 'Trung bình';
-    if (score >= 3) return 'Yếu';
+    if (score >= 9.0) return 'Xuất sắc';
+    if (score >= 8.0) return 'Giỏi';
+    if (score >= 7.0) return 'Khá';
+    if (score >= 6.5) return 'Trung bình';
+    if (score >= 3.5) return 'Yếu';
     if (score > 0) return 'Kém';
     return 'Chưa chọn';
   };

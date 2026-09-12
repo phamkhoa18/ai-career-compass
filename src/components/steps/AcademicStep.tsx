@@ -15,11 +15,11 @@ const categoryMeta: Record<string, { text: string; Icon: LucideIcon; color: stri
 
 // Mức học lực với giá trị quy đổi nội bộ
 const GRADE_LEVELS = [
-  { label: 'Xuất sắc', value: 9.5, color: '#16A34A', bg: 'bg-green-50', activeBg: 'bg-green-600', emoji: '🌟' },
+  { label: 'Xuất sắc', value: 9.0, color: '#16A34A', bg: 'bg-green-50', activeBg: 'bg-green-600', emoji: '🌟' },
   { label: 'Giỏi', value: 8.0, color: '#2563EB', bg: 'bg-blue-50', activeBg: 'bg-blue-600', emoji: '💪' },
   { label: 'Khá', value: 7.0, color: '#7C3AED', bg: 'bg-violet-50', activeBg: 'bg-violet-600', emoji: '👍' },
-  { label: 'Trung bình', value: 6.0, color: '#D97706', bg: 'bg-amber-50', activeBg: 'bg-amber-600', emoji: '📖' },
-  { label: 'Yếu', value: 4.0, color: '#EA580C', bg: 'bg-orange-50', activeBg: 'bg-orange-600', emoji: '📝' },
+  { label: 'Trung bình', value: 6.5, color: '#D97706', bg: 'bg-amber-50', activeBg: 'bg-amber-600', emoji: '📖' },
+  { label: 'Yếu', value: 4.25, color: '#EA580C', bg: 'bg-orange-50', activeBg: 'bg-orange-600', emoji: '📝' },
   { label: 'Kém', value: 2.0, color: '#DC2626', bg: 'bg-red-50', activeBg: 'bg-red-600', emoji: '⚠️' },
 ];
 
