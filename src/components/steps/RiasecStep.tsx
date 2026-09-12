@@ -136,6 +136,7 @@ export default function RiasecStep() {
               <h3 className="text-lg md:text-xl font-bold text-text-main">Nhóm {info.nameVi} ({info.name})</h3>
               <p className="text-xs md:text-sm text-text-light">{info.description}</p>
             </div>
+          </div>
         </div>
 
         {/* Questions List */}
