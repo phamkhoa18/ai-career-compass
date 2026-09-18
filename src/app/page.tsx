@@ -100,12 +100,12 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 md:mb-12 animate-fade-in-up">
             <h2 className="text-2xl md:text-3xl font-bold text-text-main mb-2">Quy Trình Đơn Giản</h2>
-            <p className="text-text-secondary text-sm md:text-lg">Chỉ mất khoảng 15 phút để khám phá con đường nghề nghiệp phù hợp</p>
+            <p className="text-text-secondary text-sm md:text-lg">Chỉ mất khoảng 10 phút để khám phá con đường nghề nghiệp phù hợp</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 stagger-children">
             {[
-              { Icon: Microscope, title: 'Trắc nghiệm RIASEC', desc: '50 câu hỏi khoa học giúp xác định nhóm tính cách nghề nghiệp của bạn.', gradient: 'bg-gradient-primary' },
+              { Icon: Microscope, title: 'Trắc nghiệm RIASEC', desc: '36 câu hỏi khoa học giúp xác định nhóm tính cách nghề nghiệp của bạn.', gradient: 'bg-gradient-primary' },
               { Icon: Sparkles, title: 'Phân tích AI', desc: 'AI phân tích toàn diện: học lực, sở thích, kỹ năng mềm, giá trị nghề nghiệp.', gradient: 'bg-gradient-cool' },
               { Icon: Target, title: 'Top 5 Ngành Nghề', desc: 'Gợi ý 5 ngành nghề phù hợp nhất kèm lý do chi tiết và điểm cần cải thiện.', gradient: 'bg-gradient-purple' },
             ].map((card, i) => (
@@ -130,8 +130,8 @@ export default function HomePage() {
               {[
                 { Icon: ClipboardList, title: 'Thông tin', desc: 'Họ tên, lớp' },
                 { Icon: BarChart3, title: 'Học lực', desc: 'Mức học lực' },
-                { Icon: Microscope, title: 'RIASEC', desc: '50 câu hỏi' },
-                { Icon: Brain, title: 'MBTI', desc: '30 câu hỏi' },
+                { Icon: Microscope, title: 'RIASEC', desc: '36 câu hỏi' },
+                { Icon: Brain, title: 'MBTI', desc: '16 câu hỏi' },
                 { Icon: Lightbulb, title: 'Sở thích', desc: 'Kỹ năng mềm' },
                 { Icon: Diamond, title: 'Giá trị', desc: 'Nghề nghiệp' },
               ].map((step, index) => (

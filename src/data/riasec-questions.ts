@@ -7,7 +7,7 @@ export interface RiasecQuestion {
 export const RIASEC_GROUP_INFO = {
   R: {
     name: 'Realistic',
-    nameVi: 'Kỹ thuật',
+    nameVi: 'Thực tế',
     color: '#FF6B6B',
     description: 'Thích làm việc với máy móc, công cụ, động vật, hoạt động ngoài trời. Ưa thích các hoạt động thể chất và thực hành.',
   },
@@ -31,81 +31,64 @@ export const RIASEC_GROUP_INFO = {
   },
   E: {
     name: 'Enterprising',
-    nameVi: 'Quản lý',
+    nameVi: 'Quản trị',
     color: '#FFA07A',
     description: 'Thích lãnh đạo, thuyết phục, kinh doanh, quản lý dự án. Tham vọng và năng động.',
   },
   C: {
     name: 'Conventional',
-    nameVi: 'Nghiệp vụ',
+    nameVi: 'Quy chuẩn',
     color: '#87CEEB',
     description: 'Thích làm việc có tổ chức, xử lý dữ liệu, tuân thủ quy trình. Cẩn thận và chính xác.',
   },
 };
 
 export const riasecQuestions: RiasecQuestion[] = [
-  // Câu hỏi mới từ THAY ĐỔI.docx - 50 câu
-  // Mapping theo nội dung: mỗi nhóm ~8 câu, phân bổ xen kẽ
+  // ===== R - Nhóm Thực tế (Realistic) =====
+  { id: 1, group: 'R', question: 'Tôi suy nghĩ thực tế và có tính tự lập.' },
+  { id: 2, group: 'R', question: 'Tôi có thể vận hành, điều khiển hoặc sửa chữa máy móc, thiết bị.' },
+  { id: 3, group: 'R', question: 'Tôi thích làm các công việc thủ công như gấp giấy, dán, may mặc hoặc làm đồ dùng.' },
+  { id: 4, group: 'R', question: 'Tôi thích đọc các sách về kỹ thuật, máy móc.' },
+  { id: 5, group: 'R', question: 'Tôi thích làm việc ngoài trời hơn là trong phòng làm việc.' },
+  { id: 6, group: 'R', question: 'Tôi là người thích nghi tốt với môi trường mới.' },
 
-  // ===== REALISTIC (R) - Kỹ thuật =====
-  { id: 1, group: 'R', question: 'Bạn có thích làm việc với máy móc hoặc công cụ?' },
-  { id: 3, group: 'R', question: 'Bạn có thích thử nghiệm công nghệ hoặc công cụ mới?' },
-  { id: 9, group: 'R', question: 'Bạn có thích sửa chữa đồ điện hoặc cơ khí?' },
-  { id: 15, group: 'R', question: 'Bạn có thích tham gia các hoạt động kỹ thuật?' },
-  { id: 21, group: 'R', question: 'Bạn có thích chế tạo hoặc sáng tạo đồ dùng?' },
-  { id: 27, group: 'R', question: 'Bạn có thích trồng cây hoặc chăm sóc động vật?' },
-  { id: 33, group: 'R', question: 'Bạn có thích vận hành máy móc hoặc thiết bị kỹ thuật?' },
-  { id: 39, group: 'R', question: 'Bạn có thích tham gia các hoạt động ngoài trời hoặc thể thao?' },
-  { id: 45, group: 'R', question: 'Bạn có thích sửa chữa hoặc lắp ráp đồ vật?' },
+  // ===== I - Nhóm Nghiên cứu (Investigative) =====
+  { id: 7, group: 'I', question: 'Tôi thích học các môn khoa học tự nhiên và làm thí nghiệm.' },
+  { id: 8, group: 'I', question: 'Tôi thích tìm hiểu bản chất của vấn đề và nghiên cứu cái mới.' },
+  { id: 9, group: 'I', question: 'Tôi có khả năng giải quyết các bài toán khó và ẩn số phức tạp.' },
+  { id: 10, group: 'I', question: 'Tôi có tính tò mò, thích khám phá và đọc báo khoa học.' },
+  { id: 11, group: 'I', question: 'Tôi là người suy nghĩ logic, chặt chẽ.' },
+  { id: 12, group: 'I', question: 'Tôi thích quan sát, phân tích mọi việc xung quanh.' },
 
-  // ===== INVESTIGATIVE (I) - Nghiên cứu =====
-  { id: 2, group: 'I', question: 'Bạn có thích nghiên cứu chuyên sâu và học hỏi liên tục?' },
-  { id: 8, group: 'I', question: 'Bạn có thích nghiên cứu và phân tích thông tin?' },
-  { id: 14, group: 'I', question: 'Bạn có thích tìm hiểu công nghệ mới?' },
-  { id: 20, group: 'I', question: 'Bạn có thích nghiên cứu thiên nhiên hoặc môi trường?' },
-  { id: 26, group: 'I', question: 'Bạn có thích tìm hiểu nguyên lý hoạt động của sự vật?' },
-  { id: 32, group: 'I', question: 'Bạn có thích giải các câu đố hoặc vấn đề logic?' },
-  { id: 38, group: 'I', question: 'Bạn có thích phân tích số liệu và tìm ra kết luận?' },
-  { id: 44, group: 'I', question: 'Bạn có thích nghiên cứu hoặc đọc sách chuyên môn?' },
-  { id: 50, group: 'I', question: 'Bạn có thích giải quyết các vấn đề khoa học?' },
+  // ===== A - Nhóm Nghệ thuật (Artistic) =====
+  { id: 13, group: 'A', question: 'Tôi thích tham gia các hoạt động nghệ thuật như ca hát, nhảy múa, vẽ tranh, chơi nhạc cụ.' },
+  { id: 14, group: 'A', question: 'Tôi thích tự do sáng tạo, không thích bị gò bó.' },
+  { id: 15, group: 'A', question: 'Tôi có trí tưởng tượng phong phú và nhạy cảm với cái đẹp.' },
+  { id: 16, group: 'A', question: 'Tôi thích viết lách, sáng tác văn thơ, kịch bản.' },
+  { id: 17, group: 'A', question: 'Tôi thích thiết kế, trang trí không gian sống hoặc không gian làm việc.' },
+  { id: 18, group: 'A', question: 'Tôi thích thưởng thức nghệ thuật và có phong cách thời trang riêng biệt.' },
 
-  // ===== ARTISTIC (A) - Nghệ thuật =====
-  { id: 7, group: 'A', question: 'Bạn có thích sáng tác nhạc, hội họa hoặc viết văn?' },
-  { id: 13, group: 'A', question: 'Bạn có thích viết kịch bản, blog hoặc sáng tạo nội dung?' },
-  { id: 19, group: 'A', question: 'Bạn có thích thiết kế trang phục hoặc nội thất?' },
-  { id: 25, group: 'A', question: 'Bạn có thích thử nghiệm màu sắc hoặc chất liệu trong nghệ thuật?' },
-  { id: 31, group: 'A', question: 'Bạn có thích ca hát, nhảy múa hoặc biểu diễn nghệ thuật?' },
-  { id: 37, group: 'A', question: 'Bạn có thích làm đồ thủ công hoặc trang trí?' },
-  { id: 43, group: 'A', question: 'Bạn có thích viết truyện, thơ hoặc sáng tác?' },
-  { id: 49, group: 'A', question: 'Bạn có thích vẽ, thiết kế hoặc sáng tạo nghệ thuật?' },
+  // ===== S - Nhóm Xã hội (Social) =====
+  { id: 19, group: 'S', question: 'Tôi dễ lắng nghe, chia sẻ và thích giúp đỡ, chăm sóc người khác.' },
+  { id: 20, group: 'S', question: 'Tôi thích làm việc theo nhóm, giao lưu và kết bạn với nhiều người.' },
+  { id: 21, group: 'S', question: 'Tôi thích tham gia các hoạt động thiện nguyện, từ thiện hoặc công tác xã hội.' },
+  { id: 22, group: 'S', question: 'Tôi có khả năng truyền đạt, giảng dạy cho người khác.' },
+  { id: 23, group: 'S', question: 'Tôi thích tư vấn, giải đáp thắc mắc cho người khác.' },
+  { id: 24, group: 'S', question: 'Tôi có khả năng tư vấn tâm lý hoặc lắng nghe khó khăn của cộng đồng.' },
 
-  // ===== SOCIAL (S) - Xã hội =====
-  { id: 6, group: 'S', question: 'Bạn có thích tham gia các hoạt động tình nguyện?' },
-  { id: 12, group: 'S', question: 'Bạn có thích làm việc với cộng đồng?' },
-  { id: 18, group: 'S', question: 'Bạn có thích chăm sóc và hướng dẫn người mới?' },
-  { id: 24, group: 'S', question: 'Bạn có thích tham gia công tác xã hội?' },
-  { id: 30, group: 'S', question: 'Bạn có thích hỗ trợ người khác giải quyết xung đột?' },
-  { id: 36, group: 'S', question: 'Bạn có thích tư vấn hoặc dạy người khác?' },
-  { id: 42, group: 'S', question: 'Bạn có thích làm việc với trẻ em hoặc người già?' },
-  { id: 48, group: 'S', question: 'Bạn có thích giúp đỡ người khác khi gặp khó khăn?' },
+  // ===== E - Nhóm Quản trị (Enterprising) =====
+  { id: 25, group: 'E', question: 'Tôi thích lãnh đạo, dẫn dắt và đứng ra tổ chức các sự kiện.' },
+  { id: 26, group: 'E', question: 'Tôi thích thuyết phục người khác đồng ý với ý kiến của mình.' },
+  { id: 27, group: 'E', question: 'Tôi là người tự tin, thích thể hiện bản thân và mạo hiểm thử thách.' },
+  { id: 28, group: 'E', question: 'Tôi thích kinh doanh, buôn bán hoặc thương lượng đàm phán.' },
+  { id: 29, group: 'E', question: 'Tôi có khả năng ra quyết định nhanh chóng.' },
+  { id: 30, group: 'E', question: 'Tôi thích đặt ra mục tiêu cao và tìm cách đạt được.' },
 
-  // ===== ENTERPRISING (E) - Quản lý =====
-  { id: 5, group: 'E', question: 'Bạn có thích quản lý tài chính hoặc dự án?' },
-  { id: 11, group: 'E', question: 'Bạn có thích giới thiệu sản phẩm hoặc ý tưởng?' },
-  { id: 17, group: 'E', question: 'Bạn có thích thảo luận và lãnh đạo dự án?' },
-  { id: 23, group: 'E', question: 'Bạn có thích quản lý nhóm hoặc tổ chức sự kiện?' },
-  { id: 29, group: 'E', question: 'Bạn có thích thuyết trình hoặc quảng bá ý tưởng?' },
-  { id: 35, group: 'E', question: 'Bạn có thích lập kế hoạch kinh doanh hoặc dự án?' },
-  { id: 41, group: 'E', question: 'Bạn có thích tham gia các hoạt động kinh doanh hoặc bán hàng?' },
-  { id: 47, group: 'E', question: 'Bạn có thích lãnh đạo hoặc thuyết phục người khác?' },
-
-  // ===== CONVENTIONAL (C) - Nghiệp vụ =====
-  { id: 4, group: 'C', question: 'Bạn có thích làm việc cẩn thận theo hướng dẫn?' },
-  { id: 10, group: 'C', question: 'Bạn có thích tổ chức dữ liệu và lưu trữ hồ sơ?' },
-  { id: 16, group: 'C', question: 'Bạn có thích sắp xếp lịch làm việc hoặc tài liệu?' },
-  { id: 22, group: 'C', question: 'Bạn có thích kiểm tra, đánh giá hồ sơ hoặc số liệu?' },
-  { id: 28, group: 'C', question: 'Bạn có thích tuân thủ hướng dẫn và quy trình?' },
-  { id: 34, group: 'C', question: 'Bạn có thích ghi chép, lập báo cáo hoặc kế toán?' },
-  { id: 40, group: 'C', question: 'Bạn có thích sắp xếp dữ liệu, lưu trữ hồ sơ?' },
-  { id: 46, group: 'C', question: 'Bạn có thích làm việc theo quy tắc và kế hoạch?' },
+  // ===== C - Nhóm Quy chuẩn (Conventional) =====
+  { id: 31, group: 'C', question: 'Tôi thích làm việc theo quy trình, hướng dẫn có sẵn và tuân thủ thời gian biểu.' },
+  { id: 32, group: 'C', question: 'Tôi là người cẩn thận, tỉ mỉ trong công việc.' },
+  { id: 33, group: 'C', question: 'Tôi thích công việc sắp xếp, lưu trữ hồ sơ, dữ liệu ngăn nắp.' },
+  { id: 34, group: 'C', question: 'Tôi thích làm việc với các con số, tính toán.' },
+  { id: 35, group: 'C', question: 'Tôi thích lập kế hoạch chi tiết trước khi làm việc và thích sự ổn định.' },
+  { id: 36, group: 'C', question: 'Tôi thích kiểm tra độ chính xác của tài liệu, báo cáo.' },
 ];

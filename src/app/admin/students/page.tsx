@@ -447,7 +447,7 @@ export default function StudentsPage() {
                 color="purple"
                 style={{ fontSize: 14, padding: '4px 12px', borderRadius: 16 }}
               >
-                MBTI: {studentDetails.mbtiResult ? studentDetails.mbtiResult : `${studentDetails.mbtiAnswers?.filter((a: string) => a).length || 0}/30 câu`}
+                MBTI: {studentDetails.mbtiResult ? studentDetails.mbtiResult : `${studentDetails.mbtiAnswers?.filter((a: string) => a).length || 0}/16 câu`}
               </Tag>
             </div>
 

@@ -11,6 +11,8 @@ import RiasecStep from '@/components/steps/RiasecStep';
 import InterestsStep from '@/components/steps/InterestsStep';
 import CareerValuesStep from '@/components/steps/CareerValuesStep';
 import MbtiStep from '@/components/steps/MbtiStep';
+import { riasecQuestions } from '@/data/riasec-questions';
+import { mbtiQuestions } from '@/data/mbti-questions';
 import {
   UserRound, BookOpen, Microscope, Heart, Trophy,
   ArrowLeft, ArrowRight, Rocket, GraduationCap, Check, Brain,
@@ -20,8 +22,8 @@ import type { LucideIcon } from 'lucide-react';
 const steps: { title: string; desc: string; Icon: LucideIcon; color: string }[] = [
   { title: 'Thông tin', desc: 'Họ tên, lớp', Icon: UserRound, color: '#E8899D' },
   { title: 'Học lực', desc: 'Mức học lực', Icon: BookOpen, color: '#7CB8CC' },
-  { title: 'RIASEC', desc: '50 câu hỏi', Icon: Microscope, color: '#B896D6' },
-  { title: 'MBTI', desc: '30 câu hỏi', Icon: Brain, color: '#6366f1' },
+  { title: 'RIASEC', desc: `${riasecQuestions.length} câu hỏi`, Icon: Microscope, color: '#B896D6' },
+  { title: 'MBTI', desc: `${mbtiQuestions.length} câu hỏi`, Icon: Brain, color: '#6366f1' },
   { title: 'Sở thích', desc: 'Kỹ năng mềm', Icon: Heart, color: '#E8B88A' },
   { title: 'Giá trị', desc: 'Nghề nghiệp', Icon: Trophy, color: '#7CC9A8' },
 ];
@@ -44,11 +46,11 @@ function AssessmentForm() {
         return true;
       case 2:
         const ansRiasec = data.riasecAnswers.filter((a) => a !== -1).length;
-        if (ansRiasec < 50) { api.warning({ description: `Bạn còn ${50 - ansRiasec} câu RIASEC chưa trả lời!`, placement: 'topRight' }); return false; }
+        if (ansRiasec < riasecQuestions.length) { api.warning({ description: `Bạn còn ${riasecQuestions.length - ansRiasec} câu RIASEC chưa trả lời!`, placement: 'topRight' }); return false; }
         return true;
       case 3:
         const ansMbti = data.mbtiAnswers.filter((a) => a !== '').length;
-        if (ansMbti < 30) { api.warning({ description: `Bạn còn ${30 - ansMbti} câu MBTI chưa trả lời!`, placement: 'topRight' }); return false; }
+        if (ansMbti < mbtiQuestions.length) { api.warning({ description: `Bạn còn ${mbtiQuestions.length - ansMbti} câu MBTI chưa trả lời!`, placement: 'topRight' }); return false; }
         return true;
       case 4:
         if (data.interests.length === 0) { api.warning({ description: 'Vui lòng chọn ít nhất 1 sở thích!', placement: 'topRight' }); return false; }

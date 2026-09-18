@@ -75,8 +75,8 @@ export default function PersonalInfoStep() {
             <div className="space-y-2.5">
               {[
                 { step: 'Đánh giá mức học lực các môn', time: '~2 phút', color: '#7CB8CC' },
-                { step: '50 câu hỏi RIASEC (sở thích nghề nghiệp)', time: '~6 phút', color: '#B896D6' },
-                { step: '30 câu hỏi MBTI (tính cách)', time: '~5 phút', color: '#6366f1' },
+                { step: '36 câu hỏi RIASEC (sở thích nghề nghiệp)', time: '~4 phút', color: '#B896D6' },
+                { step: '16 câu hỏi MBTI (tính cách)', time: '~3 phút', color: '#6366f1' },
                 { step: 'Chọn sở thích & đánh giá kỹ năng', time: '~3 phút', color: '#E8B88A' },
                 { step: 'Đánh giá giá trị nghề nghiệp', time: '~2 phút', color: '#7CC9A8' },
               ].map((item, i) => (

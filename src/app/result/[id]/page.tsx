@@ -31,12 +31,12 @@ const gradientColors = [
 const careerBgColors = ['#E8899D', '#7CB8CC', '#7CC9A8', '#E8B88A', '#B896D6'];
 
 const RIASEC_MAX_SCORES: Record<string, number> = {
-  R: 36,  // 9 questions × max 4
-  I: 36,  // 9 questions × max 4
-  A: 32,  // 8 questions × max 4
-  S: 32,  // 8 questions × max 4
-  E: 32,  // 8 questions × max 4
-  C: 32,  // 8 questions × max 4
+  R: 24,  // 6 questions × max 4
+  I: 24,  // 6 questions × max 4
+  A: 24,  // 6 questions × max 4
+  S: 24,  // 6 questions × max 4
+  E: 24,  // 6 questions × max 4
+  C: 24,  // 6 questions × max 4
 };
 
 export default function ResultPage({ params }: { params: Promise<{ id: string }> }) {
@@ -180,7 +180,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
   const radarData = riasecEntries.map(([key, value]) => ({
     subject: RIASEC_GROUP_INFO[key as keyof typeof RIASEC_GROUP_INFO].nameVi,
     value,
-    fullMark: RIASEC_MAX_SCORES[key] || 45
+    fullMark: RIASEC_MAX_SCORES[key] || 24
   }));
 
   const activeCareer: ICareerRecommendation = data.aiResult.topCareers[selectedCareerIndex] || data.aiResult.topCareers[0];
@@ -241,10 +241,10 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                 <div key={key} style={{ flex: '1 1 calc(33% - 8px)', background: '#F8FAFC', borderRadius: 8, padding: '8px 12px', border: '1px solid #E2E8F0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, marginBottom: 4 }}>
                     <span>{key} - {info.nameVi}</span>
-                    <span style={{ color: info.color }}>{value}/{RIASEC_MAX_SCORES[key] || 40}</span>
+                    <span style={{ color: info.color }}>{value}/{RIASEC_MAX_SCORES[key] || 24}</span>
                   </div>
                   <div style={{ height: 6, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${Math.min(100, (value / (RIASEC_MAX_SCORES[key] || 40)) * 100)}%`, background: info.color }} />
+                    <div style={{ height: '100%', width: `${Math.min(100, (value / (RIASEC_MAX_SCORES[key] || 24)) * 100)}%`, background: info.color }} />
                   </div>
                 </div>
               );
@@ -457,7 +457,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                   <RadarChart data={radarData}>
                     <PolarGrid stroke="#E2E8F0" />
                     <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fontWeight: 600, fill: '#475569' }} />
-                    <PolarRadiusAxis angle={30} domain={[0, 36]} tick={{ fontSize: 8, fill: '#94A3B8' }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 24]} tick={{ fontSize: 8, fill: '#94A3B8' }} />
                     <Radar name="Điểm" dataKey="value" stroke="#6366F1" fill="#6366F1" fillOpacity={0.35} strokeWidth={2} />
                     <Tooltip />
                   </RadarChart>
@@ -467,7 +467,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
             <div className="mt-4 pt-3 border-t border-slate-100 flex justify-around text-center text-xs">
               {sortedRiasec.slice(0, 3).map(([key, val]) => (
                 <div key={key}>
-                  <div className="font-bold text-slate-900">{key} ({val}/{RIASEC_MAX_SCORES[key] || 40})</div>
+                  <div className="font-bold text-slate-900">{key} ({val}/{RIASEC_MAX_SCORES[key] || 24})</div>
                   <div className="text-[10px] text-slate-500">{RIASEC_GROUP_INFO[key as keyof typeof RIASEC_GROUP_INFO].nameVi}</div>
                 </div>
               ))}
@@ -496,9 +496,9 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
                         <span className="font-bold text-slate-800 flex items-center gap-1">
                           <RIcon size={13} style={{ color: info.color }} /> {key}
                         </span>
-                        <span className="font-semibold text-slate-600">{value}/{RIASEC_MAX_SCORES[key] || 40}</span>
+                        <span className="font-semibold text-slate-600">{value}/{RIASEC_MAX_SCORES[key] || 24}</span>
                       </div>
-                      <Progress percent={Math.min(100, Math.round((value / (RIASEC_MAX_SCORES[key] || 40)) * 100))} showInfo={false} strokeColor={info.color} size="small" />
+                      <Progress percent={Math.min(100, Math.round((value / (RIASEC_MAX_SCORES[key] || 24)) * 100))} showInfo={false} strokeColor={info.color} size="small" />
                     </div>
                   );
                 })}

@@ -1,44 +1,30 @@
-// Bản đồ chấm điểm cho 30 câu hỏi MBTI mới (phiên bản Việt hóa)
-// Câu 1-7: E/I, Câu 8-14: S/N, Câu 15-21: T/F, Câu 22-30: J/P
+// Bản đồ chấm điểm cho 16 câu hỏi MBTI (phiên bản Việt hóa)
+// Câu 1-4: E/I, Câu 5-8: S/N, Câu 9-12: T/F, Câu 13-16: J/P
 // Cột A luôn = chiều thuận (E, S, T, J), Cột B = chiều ngược (I, N, F, P)
 const MBTI_KEY: { a: string; b: string }[] = [
-  // ===== E/I: Câu 1-7 =====
+  // ===== E/I: Câu 1-4 =====
   { a: 'E', b: 'I' }, // 1. Giao tiếp nhiều / Ít người quen
   { a: 'E', b: 'I' }, // 2. Ra ngoài / Ở một mình
   { a: 'E', b: 'I' }, // 3. Chủ động bắt chuyện / Đợi người khác
-  { a: 'E', b: 'I' }, // 4. Nắm bắt nhanh / Biết sau
-  { a: 'E', b: 'I' }, // 5. Sẵn sàng nghe / Ngập ngừng
-  { a: 'E', b: 'I' }, // 6. Phấn chấn / Mệt mỏi
-  { a: 'E', b: 'I' }, // 7. Cởi mở / Kín đáo
+  { a: 'E', b: 'I' }, // 4. Phấn chấn / Mệt mỏi
 
-  // ===== S/N: Câu 8-14 =====
-  { a: 'S', b: 'N' }, // 8. Thực tế / Sáng tạo
-  { a: 'S', b: 'N' }, // 9. Chi tiết / Bức tranh toàn cảnh
-  { a: 'S', b: 'N' }, // 10. Đời thực / Viễn tưởng
-  { a: 'S', b: 'N' }, // 11. Kinh nghiệm / Trực giác
-  { a: 'S', b: 'N' }, // 12. Bay bổng (S) / Nhàm chán (N)
-  { a: 'S', b: 'N' }, // 13. Quy trình / Cách mới
-  { a: 'S', b: 'N' }, // 14. Mục tiêu trước mắt / Lo xa
+  // ===== S/N: Câu 5-8 =====
+  { a: 'S', b: 'N' }, // 5. Thực tế / Sáng tạo
+  { a: 'S', b: 'N' }, // 6. Chi tiết / Bức tranh toàn cảnh
+  { a: 'S', b: 'N' }, // 7. Kinh nghiệm / Trực giác
+  { a: 'S', b: 'N' }, // 8. Mục tiêu trước mắt / Lo xa
 
-  // ===== T/F: Câu 15-21 =====
-  { a: 'T', b: 'F' }, // 15. Logic / Cảm xúc
-  { a: 'T', b: 'F' }, // 16. Nguyên tắc / Hoàn cảnh
-  { a: 'T', b: 'F' }, // 17. Nhất quán tư duy / Hòa hợp cảm xúc
-  { a: 'T', b: 'F' }, // 18. Sắc bén logic / Tinh tế ấm áp
-  { a: 'T', b: 'F' }, // 19. Giải pháp / Lắng nghe
-  { a: 'F', b: 'T' }, // 20. Tàn nhẫn (F) / Bất công (T) — Flipped!
-  { a: 'T', b: 'F' }, // 21. Cứng rắn / Nhẹ nhàng
+  // ===== T/F: Câu 9-12 =====
+  { a: 'T', b: 'F' }, // 9. Logic / Cảm xúc
+  { a: 'T', b: 'F' }, // 10. Nguyên tắc / Hoàn cảnh
+  { a: 'T', b: 'F' }, // 11. Sắc bén logic / Tinh tế ấm áp
+  { a: 'T', b: 'F' }, // 12. Giải pháp / Lắng nghe
 
-  // ===== J/P: Câu 22-30 =====
-  { a: 'J', b: 'P' }, // 22. Kế hoạch / Tùy hứng
-  { a: 'J', b: 'P' }, // 23. Sắp xếp xong / Để ngỏ
-  { a: 'J', b: 'P' }, // 24. Ngăn nắp / Bừa bộn
-  { a: 'J', b: 'P' }, // 25. Lịch trình chi tiết / Ý chính
-  { a: 'J', b: 'P' }, // 26. Làm sớm / Sát giờ
-  { a: 'J', b: 'P' }, // 27. Khó chịu khi thay đổi / Linh hoạt
-  { a: 'J', b: 'P' }, // 28. To-do list / Tùy tâm trạng
-  { a: 'J', b: 'P' }, // 29. Chắc chắn / Dự kiến
-  { a: 'J', b: 'P' }, // 30. Trật tự / Tự nhiên
+  // ===== J/P: Câu 13-16 =====
+  { a: 'J', b: 'P' }, // 13. Kế hoạch / Tùy hứng
+  { a: 'J', b: 'P' }, // 14. Ngăn nắp / Bừa bộn
+  { a: 'J', b: 'P' }, // 15. Lịch trình chi tiết / Ý chính
+  { a: 'J', b: 'P' }, // 16. To-do list / Tùy tâm trạng
 ];
 
 export interface MbtiCalculationResult {

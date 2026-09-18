@@ -7,11 +7,11 @@ import { RIASEC_ICONS } from '@/components/ui/riasec-icons';
 import { ChevronLeft, ChevronRight, LayoutGrid, Check } from 'lucide-react';
 
 const LIKERT = [
-  { value: 0, emoji: '🚫', label: 'Không phù hợp', color: '#ef4444', bg: 'hover:bg-red-50' },
-  { value: 1, emoji: '😐', label: 'Bình thường', color: '#6b7280', bg: 'hover:bg-gray-50' },
-  { value: 2, emoji: '🙂', label: 'Có hứng thú', color: '#f59e0b', bg: 'hover:bg-amber-50' },
-  { value: 3, emoji: '😊', label: 'Thích', color: '#10b981', bg: 'hover:bg-emerald-50' },
-  { value: 4, emoji: '🤩', label: 'Rất phù hợp', color: '#22c55e', bg: 'hover:bg-green-50' },
+  { value: 0, emoji: '❌', label: 'Hoàn toàn sai', color: '#ef4444', bg: 'hover:bg-red-50' },
+  { value: 1, emoji: '🤏', label: 'Đúng 1 vài', color: '#f59e0b', bg: 'hover:bg-amber-50' },
+  { value: 2, emoji: '⚖️', label: 'Đúng 1 nửa', color: '#6b7280', bg: 'hover:bg-gray-50' },
+  { value: 3, emoji: '✅', label: 'Đúng hầu hết', color: '#10b981', bg: 'hover:bg-emerald-50' },
+  { value: 4, emoji: '💯', label: 'Đúng 100%', color: '#22c55e', bg: 'hover:bg-green-50' },
 ];
 
 const GROUPS = ['R', 'I', 'A', 'S', 'E', 'C'] as const;
@@ -117,7 +117,7 @@ export default function RiasecStep() {
                 {/* Progress bar line for uncompleted */}
                 {!progress?.isComplete && (
                   <div className="absolute bottom-0 left-0 h-1 bg-gray-100 w-full opacity-60">
-                    <div className="h-full" style={{ width: `${(progress?.answered || 0) * 10}%`, backgroundColor: gi.color }} />
+                    <div className="h-full" style={{ width: `${((progress?.answered || 0) / (progress?.total || 1)) * 100}%`, backgroundColor: gi.color }} />
                   </div>
                 )}
               </button>
