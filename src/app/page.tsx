@@ -56,7 +56,7 @@ export default function HomePage() {
 
             <div className="flex gap-6 md:gap-8 mt-8 md:mt-10 justify-center lg:justify-start">
               {[
-                { val: '42', label: 'Câu hỏi RIASEC', color: 'text-primary-dark' },
+                { val: '36', label: 'Câu hỏi RIASEC', color: 'text-primary-dark' },
                 { val: '6', label: 'Nhóm tính cách', color: 'text-secondary-dark' },
                 { val: 'Top 5', label: 'Ngành nghề gợi ý', color: 'text-accent-dark' },
               ].map((stat, i) => (
