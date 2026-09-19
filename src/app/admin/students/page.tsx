@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Spin, message, Typography, Space, Input, Drawer, Descriptions, Progress, Divider, Row, Col } from 'antd';
-import { DownloadOutlined, FilePdfOutlined, SearchOutlined, EyeOutlined, ExportOutlined, CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Spin, message, Typography, Space, Input, Drawer, Descriptions, Progress, Divider, Row, Col, Modal, Popconfirm } from 'antd';
+import { DownloadOutlined, FilePdfOutlined, SearchOutlined, EyeOutlined, ExportOutlined, CheckCircleFilled, CloseCircleFilled, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -104,6 +104,44 @@ export default function StudentsPage() {
       setStudentDetails(null);
       setSelectedStudentId(null);
     }, 300);
+  };
+
+  const handleDeleteStudent = async (id: string, fullName: string) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa học sinh',
+      icon: <ExclamationCircleFilled style={{ color: '#ef4444' }} />,
+      content: (
+        <div>
+          <p>Bạn có chắc chắn muốn xóa học sinh <strong>{fullName}</strong>?</p>
+          <p style={{ color: '#ef4444', fontSize: 13, marginTop: 8 }}>⚠️ Hành động này không thể hoàn tác. Toàn bộ dữ liệu hướng nghiệp của học sinh sẽ bị xóa vĩnh viễn.</p>
+        </div>
+      ),
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      centered: true,
+      okButtonProps: { style: { borderRadius: 8 } },
+      cancelButtonProps: { style: { borderRadius: 8 } },
+      onOk: async () => {
+        try {
+          const res = await fetch(`/api/admin/students/${id}`, { method: 'DELETE' });
+          if (res.ok) {
+            messageApi.success(`Đã xóa học sinh "${fullName}" thành công!`);
+            // Remove from local state immediately
+            setStudents(prev => prev.filter(s => s._id !== id));
+            // Close drawer if viewing this student
+            if (selectedStudentId === id) {
+              closeDrawer();
+            }
+          } else {
+            const data = await res.json();
+            messageApi.error(data.error || 'Không thể xóa học sinh');
+          }
+        } catch (e) {
+          messageApi.error('Lỗi kết nối máy chủ khi xóa');
+        }
+      },
+    });
   };
 
   const handleExportExcel = () => {
@@ -280,13 +318,23 @@ export default function StudentsPage() {
       title: 'Hành động',
       key: 'action',
       align: 'center' as const,
+      width: 120,
       render: (_: any, record: Student) => (
-        <Button 
-          type="text" 
-          icon={<EyeOutlined style={{ color: '#1677ff' }} />} 
-          onClick={() => fetchStudentDetails(record._id)}
-          title="Xem chi tiết"
-        />
+        <Space size={4}>
+          <Button 
+            type="text" 
+            icon={<EyeOutlined style={{ color: '#1677ff' }} />} 
+            onClick={() => fetchStudentDetails(record._id)}
+            title="Xem chi tiết"
+          />
+          <Button 
+            type="text" 
+            danger
+            icon={<DeleteOutlined />} 
+            onClick={() => handleDeleteStudent(record._id, record.fullName)}
+            title="Xóa học sinh"
+          />
+        </Space>
       ),
     },
   ];

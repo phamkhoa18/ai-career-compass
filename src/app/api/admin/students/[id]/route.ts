@@ -23,3 +23,23 @@ export async function GET(
     return NextResponse.json({ error: 'Lỗi hệ thống' }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    await connectDB();
+    const student = await Assessment.findByIdAndDelete(id);
+
+    if (!student) {
+      return NextResponse.json({ error: 'Không tìm thấy học sinh' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Đã xóa học sinh thành công' });
+  } catch (error) {
+    console.error('Failed to delete student:', error);
+    return NextResponse.json({ error: 'Lỗi hệ thống khi xóa' }, { status: 500 });
+  }
+}
